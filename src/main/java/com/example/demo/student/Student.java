@@ -17,7 +17,7 @@ public class Student implements Serializable {
     private String surname;
     @Column(length = 50,
             unique = true)
-    private String phone_number;
+    private String phone;
     @Column
     private LocalDate dob;
 
@@ -46,12 +46,12 @@ public class Student implements Serializable {
         this.surname = surname;
     }
 
-    public String getPhone_number() {
-        return phone_number;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhone_number(String phone_number) {
-        this.phone_number = phone_number;
+    public void setPhone(String phone_number) {
+        this.phone = phone_number;
     }
 
     public LocalDate getDob() {
@@ -67,23 +67,23 @@ public class Student implements Serializable {
 
     public Student(String name,
                    String surname,
-                   String phone_number,
+                   String phone,
                    LocalDate dob) {
         this.name = name;
         this.surname = surname;
-        this.phone_number = phone_number;
+        this.phone = phone;
         this.dob = dob;
     }
 
     public Student(Long id,
                    String name,
                    String surname,
-                   String phone_number,
+                   String phone,
                    LocalDate dob) {
         this.id = id;
         this.name = name;
         this.surname = surname;
-        this.phone_number = phone_number;
+        this.phone = phone;
         this.dob = dob;
     }
 }
