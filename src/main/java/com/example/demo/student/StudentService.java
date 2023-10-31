@@ -21,30 +21,30 @@ public class StudentService {
         return repository.findAll();
     }
 
-//    public Student getStudent(Long id) {
-//        Optional<Student> student = repository.findById(id);
-//        if (student.isPresent()) {
-//            return student.get();
-//        } else {
-//            throw new ExistsException("Student does not exists");
-//        }
-//    }
-
-    public List<Student> getStudents(Long[] ids) {
-        ArrayList<Student> studentsList = new ArrayList<>();
-
-        if (ids == null ||
-            ids.length == 0) {
-            throw new NullPointerException("You must insert any values");
+    public Student getStudent(Long id) {
+        Optional<Student> student = repository.findById(id);
+        if (student.isPresent()) {
+            return student.get();
+        } else {
+            throw new ExistsException("Student does not exists");
         }
-
-        for (Long id : ids) {
-            Optional<Student> checkStudent = repository.findById(id);
-            checkStudent.ifPresent(studentsList::add);
-        }
-
-        return studentsList;
     }
+
+//    public List<Student> getStudents(Long[] id) {
+//        ArrayList<Student> studentsList = new ArrayList<>();
+//
+//        if (ids == null ||
+//            ids.length == 0) {
+//            throw new NullPointerException("You must insert any values");
+//        }
+//
+//        for (Long id : ids) {
+//            Optional<Student> checkStudent = repository.findById(id);
+//            checkStudent.ifPresent(studentsList::add);
+//        }
+//
+//        return studentsList;
+//    }
 
     public void addStudent(Student student) {
         Student checkStudent =

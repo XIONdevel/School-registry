@@ -21,10 +21,9 @@ public class StudentController {
         return service.getAll();
     }
 
-    //TODO: implement multiple search
-    @GetMapping("/{ids}")
-    public List<Student> getStudents(@PathVariable Long[] ids) {
-        return service.getStudents(ids);
+    @GetMapping("/{id}")
+    public Student getStudents(@PathVariable Long id) {
+        return service.getStudent(id);
     }
 
     @PostMapping("/add")
