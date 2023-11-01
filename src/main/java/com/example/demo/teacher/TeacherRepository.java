@@ -17,4 +17,5 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
 //    @Query("SELECT COUNT(s) FROM Teacher s WHERE s.phone=:phone")
     Boolean existsTeacherByPhone(@Param("phone") String phone);
+
 }

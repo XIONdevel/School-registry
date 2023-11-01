@@ -45,7 +45,7 @@ public class TeacherService {
         repository.save(teacher);
     }
 
-    //TODO: implement checking by email && phone
+    //TODO: remove
     public void editTeacher(Teacher teacher) {
         if (repository.existsById(teacher.getId())) {
             repository.save(teacher);
@@ -60,5 +60,14 @@ public class TeacherService {
         } else {
             throw new ExistsException("Teacher with this id does not exists");
         }
+    }
+
+    /**
+     * TODO: implement:
+     * check by email
+     * by phone
+     */
+    public void updateTeacher(Long id, Teacher teacher) {
+
     }
 }
