@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
-    @Query(value = "SELECT e FROM Student e WHERE e.phone_number=:number")
-    Student findByPhone_number(@Param("number") String number);
+    @Query(value = "SELECT e FROM Student e WHERE e.phone=:phone")
+    Student findByPhone_number(@Param("phone") String phone);
 
 
 
