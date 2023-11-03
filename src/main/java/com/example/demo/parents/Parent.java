@@ -1,18 +1,13 @@
-package com.example.demo.student;
+package com.example.demo.parents;
 
-import com.example.demo.parents.Parent;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.demo.student.Student;
 import jakarta.persistence.*;
 
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "Student")
-public class Student implements Serializable {
+public class Parent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,15 +22,18 @@ public class Student implements Serializable {
             unique = true)
     private String phone;
 
-    @Column(length = 50)
+    @Column(length = 50,
+            unique = true)
     private String email;
 
-    //    @JsonIgnore
-    @ManyToMany(mappedBy = "children")
-    private Set<Parent> parents = new HashSet<>();
-
-    @Column
-    private LocalDate dob;
+    @Transient
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "student_parent",
+            joinColumns = @JoinColumn(name = "parent_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private Set<Student> children = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -77,48 +75,36 @@ public class Student implements Serializable {
         this.email = email;
     }
 
-    public Set<Parent> getParents() {
-        return parents;
+    public Set<Student> getChildren() {
+        return children;
     }
 
-    public void addParents(Parent parent) {
-        parents.add(parent);
+    public void addChildren(Student student) {
+        children.add(student);
     }
 
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public Student(Long id,
-                   String name,
-                   String surname,
-                   String phone,
-                   String email,
-                   LocalDate dob) {
+    public Parent(Long id,
+                  String name,
+                  String surname,
+                  String phone,
+                  String email) {
         this.id = id;
         this.name = name;
         this.surname = surname;
         this.phone = phone;
         this.email = email;
-        this.dob = dob;
     }
 
-    public Student(String name,
-                   String surname,
-                   String phone,
-                   String email,
-                   LocalDate dob) {
+    public Parent(String name,
+                  String surname,
+                  String phone,
+                  String email) {
         this.name = name;
         this.surname = surname;
         this.phone = phone;
         this.email = email;
-        this.dob = dob;
     }
 
-    public Student() {
+    public Parent() {
     }
 }

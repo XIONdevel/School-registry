@@ -10,12 +10,12 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     Teacher findTeacherByEmail(@Param("email") String email);
 
-//    @Query("SELECT s FROM Teacher s WHERE s.phone = :phone")
     Teacher findTeacherByPhone(@Param("phone") String phone);
 
-    Boolean existsTeacherByEmail(@Param("Email") String email);
+    boolean existsByPhoneOrEmail(String phone, String email);
 
-//    @Query("SELECT COUNT(s) FROM Teacher s WHERE s.phone=:phone")
-    Boolean existsTeacherByPhone(@Param("phone") String phone);
+    boolean existsByPhone(String phone);
+
+    boolean existsByEmail(String email);
 
 }
