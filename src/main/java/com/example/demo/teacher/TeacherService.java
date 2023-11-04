@@ -30,19 +30,19 @@ public class TeacherService {
     }
 
     public void addTeacher(Teacher teacher) {
-        if (repository.existsTeacherByPhone(teacher.getPhone())) {
-            throw new ExistsException("Phone is taken");
-        }
-
-        if (repository.existsTeacherByEmail(teacher.getEmail())) {
-            throw new ExistsException("Email is taken");
-        }
-
-        if (repository.existsById(teacher.getId())) {
-            throw new ExistsException("Teacher with same id already exists");
-        }
-
-        repository.save(teacher);
+//        if (repository.existsTeacherByPhone(teacher.getPhone())) {
+//            throw new ExistsException("Phone is taken");
+//        }
+//
+//        if (repository.existsTeacherByEmail(teacher.getEmail())) {
+//            throw new ExistsException("Email is taken");
+//        }
+//
+//        if (repository.existsById(teacher.getId())) {
+//            throw new ExistsException("Teacher with same id already exists");
+//        }
+//
+//        repository.save(teacher);
     }
 
     //TODO: remove
@@ -62,12 +62,5 @@ public class TeacherService {
         }
     }
 
-    /**
-     * TODO: implement:
-     * check by email
-     * by phone
-     */
-    public void updateTeacher(Long id, Teacher teacher) {
-
-    }
+    
 }

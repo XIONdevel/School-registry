@@ -4,6 +4,7 @@ import com.example.demo.exception.ExistsException;
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.teacher.TeacherRepository;
+import com.example.demo.utils.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +16,17 @@ public class ParentService {
     private final ParentRepository parentRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final ServiceUtil serviceUtil;
 
     @Autowired
     public ParentService(ParentRepository parentRepository,
                          StudentRepository studentRepository,
-                         TeacherRepository teacherRepository) {
+                         TeacherRepository teacherRepository,
+                         ServiceUtil serviceUtil) {
         this.parentRepository = parentRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
+        this.serviceUtil = serviceUtil;
     }
 
     public Parent getParent(Long id) {
@@ -46,17 +50,11 @@ public class ParentService {
         String email = parent.getEmail();
         String phone = parent.getPhone();
 
-        if (studentRepository.existsByEmail(email) ||
-                teacherRepository.existsByEmail(email) ||
-                parentRepository.existsByEmail(email) &&
-                        email != null) {
+        if (serviceUtil.isEmailTaken(email)) {
             throw new ExistsException("email already taken");
         }
 
-        if (studentRepository.existsByPhone(phone) ||
-                teacherRepository.existsByPhone(phone) ||
-                parentRepository.existsByPhone(phone) &&
-                        phone != null) {
+        if (serviceUtil.isPhoneTaken(phone)) {
             throw new ExistsException("phone already taken");
         }
 
@@ -76,24 +74,14 @@ public class ParentService {
             throw new NullPointerException("id:" + id + ", updated parent: " + updatedParent);
         }
 
-        if (!parentRepository.existsById(id)) {
-            throw new ExistsException("parent with this id does not exists");
+        if (parentRepository.existsById(id)) {
+            parentRepository.deleteById(id);
         }
 
-        String email = updatedParent.getEmail();
-        String phone = updatedParent.getPhone();
-
-        if (studentRepository.existsByEmail(email) ||
-                teacherRepository.existsByEmail(email) ||
-                parentRepository.existsByEmail(email) &&
-                        email != null) {
+        if (serviceUtil.isEmailTaken(updatedParent.getEmail())) {
             throw new ExistsException("email already taken");
         }
-
-        if (studentRepository.existsByPhone(phone) ||
-                teacherRepository.existsByPhone(phone) ||
-                parentRepository.existsByPhone(phone) &&
-                        phone != null) {
+        if (serviceUtil.isPhoneTaken(updatedParent.getPhone())) {
             throw new ExistsException("phone already taken");
         }
 

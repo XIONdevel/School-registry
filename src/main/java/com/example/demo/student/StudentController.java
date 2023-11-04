@@ -16,30 +16,7 @@ public class StudentController {
         this.service = service;
     }
 
-    @GetMapping()
-    public List<Student> fullList() {
-        return service.getAll();
-    }
 
-    @GetMapping("/{id}")
-    public Student getStudents(@PathVariable Long id) {
-        return service.getStudent(id);
-    }
-
-    @PostMapping("/add")
-    public void insertStudent(@RequestBody Student student) {
-        service.addStudent(student);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteStudent(@PathVariable Long id) {
-        service.deleteStudent(id);
-    }
-
-    @PutMapping("/edit")
-    public void editStudent(@RequestBody Student student) {
-        service.updateStudent(student);
-    }
 
 
 
