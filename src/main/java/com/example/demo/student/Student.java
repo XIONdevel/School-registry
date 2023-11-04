@@ -30,8 +30,13 @@ public class Student implements Serializable {
     @Column(length = 50)
     private String email;
 
-    //    @JsonIgnore
-    @ManyToMany(mappedBy = "children")
+    @JsonIgnore
+    @ManyToMany (cascade = CascadeType.ALL)
+    @JoinTable (
+            name = "student_parent",
+            joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "parent_id")
+    )
     private Set<Parent> parents = new HashSet<>();
 
     @Column
@@ -83,6 +88,10 @@ public class Student implements Serializable {
 
     public void addParents(Parent parent) {
         parents.add(parent);
+    }
+
+    public void removeParent(Parent parent) {
+        parents.remove(parent);
     }
 
     public LocalDate getDob() {

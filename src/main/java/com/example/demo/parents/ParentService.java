@@ -3,6 +3,7 @@ package com.example.demo.parents;
 import com.example.demo.exception.ExistsException;
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
+import com.example.demo.student.StudentService;
 import com.example.demo.teacher.TeacherRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +114,9 @@ public class ParentService {
 
         student.getParents().add(parent);
         parent.getChildren().add(student);
+        studentRepository.save(student);
+        parentRepository.save(parent);
+
     }
 
     public void removeChild(Long studentId, Long parentId) {
@@ -135,6 +139,8 @@ public class ParentService {
 
         if (student.get().getParents().contains(parent.get())) {
             student.get().getParents().remove(parent.get());
+            studentRepository.save(student.get());
+            parentRepository.save(parent.get());
         } else {
             throw new ExistsException("This parent is not this child parent");
         }

@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Table(name = "parent")
 public class Parent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,13 +27,7 @@ public class Parent {
             unique = true)
     private String email;
 
-    @Transient
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "student_parent",
-            joinColumns = @JoinColumn(name = "parent_id"),
-            inverseJoinColumns = @JoinColumn(name = "student_id")
-    )
+    @ManyToMany(mappedBy = "parents")
     private Set<Student> children = new HashSet<>();
 
     public Long getId() {

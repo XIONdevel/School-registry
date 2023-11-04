@@ -97,28 +97,69 @@ public class StudentService {
         }
     }
 
-    public void deleteParent(Parent parent, Student student) {
-        if (parent == null || student == null) {
-            throw new NullPointerException("Parent: " + parent + ", student: " + student);
+    public void deleteParent(Long parentId, Long studentId) {
+        if (parentId == null || studentId == null) {
+            throw new NullPointerException("Parent: " + parentId + ", student: " + studentId);
         }
 
-        Set<Parent> parents = student.getParents();
+        Optional<Parent> pr = parentRepository.findById(parentId);
+        Optional<Student> st = studentRepository.findById(studentId);
+        Student student;
+        Parent parent;
 
-        for (Parent p : parents) {
-            p.getChildren().remove(student);
+        if (pr.isPresent()) {
+            parent = pr.get();
+        } else {
+            throw new ExistsException("parent does not exists");
         }
+
+        if (st.isPresent()) {
+            student = st.get();
+        } else {
+            throw new ExistsException("student does not exists");
+        }
+
+        student.removeParent(parent);
+        studentRepository.save(student);
+        parentRepository.save(parent);
     }
 
-    public void addParent(Parent parent, Student student) {
-        if (parent == null || student == null) {
-            throw new NullPointerException("Parent: " + parent + ", student: " + student);
+    public void addParent(Long parentId, Long studentId) {
+        if (parentId == null || studentId == null) {
+            throw new NullPointerException("Parent: " + parentId + ", student: " + studentId);
+        }
+
+        Optional<Parent> pr = parentRepository.findById(parentId);
+        Optional<Student> st = studentRepository.findById(studentId);
+
+        Student student;
+        Parent parent;
+
+        if (pr.isPresent()) {
+            parent = pr.get();
+        } else {
+            throw new ExistsException("parent does not exists");
+        }
+
+        if (st.isPresent()) {
+            student = st.get();
+        } else {
+            throw new ExistsException("student does not exists");
         }
 
         if (student.getParents().contains(parent)) {
             throw new ExistsException("this person already this kid parent");
-        } else {
-            student.addParents(parent);
         }
+
+        student.addParents(parent);
+
+        if (parent.getChildren().contains(student)) {
+            throw new ExistsException("this person already this kid parent");
+        }
+
+        parent.addChildren(student);
+        studentRepository.save(student);
+        parentRepository.save(parent);
     }
 
 
