@@ -41,13 +41,13 @@ public class StudentController {
         service.editStudent(id, student);
     }
 
-    @PutMapping("/{studentId}/parent/remove/{parentId}")
+    @PutMapping("/{studentId}/parents/remove/{parentId}")
     public void removeParent(@PathVariable Long parentId,
                       @PathVariable Long studentId) {
         service.deleteParent(parentId, studentId);
     }
 
-    @PutMapping("/{studentId}/parent/add/{parentId}")
+    @PutMapping("/{studentId}/parents/add/{parentId}")
     public void addParent(@PathVariable Long parentId,
                       @PathVariable Long studentId) {
         service.addParent(parentId, studentId);

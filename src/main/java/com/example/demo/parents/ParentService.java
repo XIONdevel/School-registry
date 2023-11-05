@@ -112,8 +112,8 @@ public class ParentService {
             throw new ExistsException("this parent is already marked as a parent of this person");
         }
 
-        student.getParents().add(parent);
-        parent.getChildren().add(student);
+        student.addParents(parent);
+        parent.addChildren(student);
         studentRepository.save(student);
         parentRepository.save(parent);
 

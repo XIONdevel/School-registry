@@ -31,9 +31,27 @@ public class TeacherController {
         service.addTeacher(teacher);
     }
 
-    @PutMapping("/update/{id}")
-    public void update(@RequestBody Teacher teacher,
-                       @PathVariable Long id) {
+    @PutMapping("/{id}/edit")
+    public void updateTeacher(@RequestBody Teacher teacher,
+                              @PathVariable Long id) {
+        service.editTeacher(id, teacher);
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public void deleteTeacher(@PathVariable Long id) {
+        service.deleteTeacher(id);
+    }
+
+    @PutMapping("/{teacherId}/subjects/add/{subjectId}")
+    public void addSubject(@PathVariable Long subjectId,
+                           @PathVariable Long teacherId) {
+        service.addSubject(teacherId, subjectId);
+    }
+
+    @PutMapping("/{teacherId}/subjects/remove/{subjectId}")
+    public void removeSubject(@PathVariable Long subjectId,
+                              @PathVariable Long teacherId) {
+        service.removeSubject(teacherId, subjectId);
     }
 
 
