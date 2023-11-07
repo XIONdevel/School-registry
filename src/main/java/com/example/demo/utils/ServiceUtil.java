@@ -1,6 +1,6 @@
 package com.example.demo.utils;
 
-import com.example.demo.parents.ParentRepository;
+import com.example.demo.parent.ParentRepository;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.teacher.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;

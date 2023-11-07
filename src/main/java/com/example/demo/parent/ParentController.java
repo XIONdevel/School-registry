@@ -1,4 +1,4 @@
-package com.example.demo.parents;
+package com.example.demo.parent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

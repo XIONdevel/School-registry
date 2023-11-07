@@ -1,8 +1,8 @@
 package com.example.demo.teacher;
 
 import com.example.demo.exception.ExistsException;
-import com.example.demo.parents.Parent;
-import com.example.demo.student.Student;
+import com.example.demo.group.Group;
+import com.example.demo.group.GroupRepository;
 import com.example.demo.subject.Subject;
 import com.example.demo.subject.SubjectRepository;
 import com.example.demo.utils.ServiceUtil;
@@ -16,14 +16,17 @@ import java.util.Optional;
 public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
+    private final GroupRepository groupRepository;
     private final ServiceUtil serviceUtil;
 
     @Autowired
     public TeacherService(TeacherRepository teacherRepository,
                           SubjectRepository subjectRepository,
+                          GroupRepository groupRepository,
                           ServiceUtil serviceUtil) {
         this.teacherRepository = teacherRepository;
         this.subjectRepository = subjectRepository;
+        this.groupRepository = groupRepository;
         this.serviceUtil = serviceUtil;
     }
 
@@ -143,6 +146,72 @@ public class TeacherService {
         subject.removeTeacher(teacher);
         teacherRepository.save(teacher);
         subjectRepository.save(subject);
+    }
+
+    public void addGroup(Long groupId, Long teacherId) {
+        if (groupId == null || teacherId == null) {
+            throw new NullPointerException("group & teacher ids can not equals null");
+        }
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
+
+        if (optionalTeacher.isEmpty()) {
+            throw new ExistsException("teacher with this id does not exists");
+        }
+
+        if (optionalGroup.isEmpty()) {
+            throw new ExistsException("group with this id does not exists");
+        }
+
+        Teacher teacher = optionalTeacher.get();
+        Group group = optionalGroup.get();
+
+        if (group.isTaken()) {
+            throw new ExistsException("this group already taken");
+        }
+
+        if (teacher.getGroup() != null) {
+            throw new ExistsException("this teacher already have a group");
+        }
+
+        group.addTeacherLead(teacher);
+        teacher.addGroup(group);
+        groupRepository.save(group);
+        teacherRepository.save(teacher);
+    }
+
+    public void removeGroup(Long groupId, Long teacherId) {
+        if (groupId == null || teacherId == null) {
+            throw new NullPointerException("group & teacher ids can not be null");
+        }
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+        Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
+
+        if (optionalTeacher.isEmpty()) {
+            throw new ExistsException("teacher with this id does not exists");
+        }
+
+        if (optionalGroup.isEmpty()) {
+            throw new ExistsException("group with this id does not exists");
+        }
+
+        Teacher teacher = optionalTeacher.get();
+        Group group = optionalGroup.get();
+
+        if (!group.isTaken()) {
+            throw new ExistsException("this group is not taken");
+        }
+
+        if (teacher.getGroup() == null) {
+            throw new ExistsException("this teacher does not have a group");
+        }
+
+        group.removeTeacher();
+        teacher.removeGroup();
+        groupRepository.save(group);
+        teacherRepository.save(teacher);
     }
 
 

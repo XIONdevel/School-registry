@@ -1,5 +1,6 @@
 package com.example.demo.teacher;
 
+import com.example.demo.group.Group;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class TeacherController {
         return service.getTeacher(id);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/add/new")
     public void addTeacher(Teacher teacher) {
         service.addTeacher(teacher);
     }
@@ -52,6 +53,18 @@ public class TeacherController {
     public void removeSubject(@PathVariable Long subjectId,
                               @PathVariable Long teacherId) {
         service.removeSubject(teacherId, subjectId);
+    }
+
+    @PutMapping("/{teacherId}/add/group/{groupId}")
+    public void addMainGroup(@PathVariable Long groupId,
+                             @PathVariable Long teacherId) {
+        service.addGroup(groupId, teacherId);
+    }
+
+    @PutMapping("/{teacherId}/remove/group/{groupId}")
+    public void removeMainGroup(@PathVariable Long groupId,
+                             @PathVariable Long teacherId) {
+        service.removeGroup(groupId, teacherId);
     }
 
 

@@ -1,9 +1,8 @@
-package com.example.demo.parents;
+package com.example.demo.parent;
 
 import com.example.demo.exception.ExistsException;
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
-import com.example.demo.student.StudentService;
 import com.example.demo.teacher.TeacherRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;

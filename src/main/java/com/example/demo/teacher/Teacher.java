@@ -1,5 +1,6 @@
 package com.example.demo.teacher;
 
+import com.example.demo.group.Group;
 import com.example.demo.subject.Subject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -43,6 +44,9 @@ public class Teacher {
     )
     private Set<Subject> subjects = new HashSet<>();
 
+    @OneToOne(mappedBy = "teacherLead")
+    private Group mainGroup;
+
     public void addSubject(Subject subject) {
         subjects.add(subject);
     }
@@ -65,6 +69,14 @@ public class Teacher {
         this.dob = dob;
         this.position = position;
         this.email = email;
+    }
+
+    public Group getGroup() {
+        return mainGroup;
+    }
+
+    public void addGroup(Group mainGroup) {
+        this.mainGroup = mainGroup;
     }
 
     public Long getId() {
@@ -142,5 +154,9 @@ public class Teacher {
     }
 
     public Teacher() {
+    }
+
+    public void removeGroup() {
+        this.mainGroup = null;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.demo.parents;
+package com.example.demo.parent;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

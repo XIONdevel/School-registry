@@ -1,4 +1,4 @@
-package com.example.demo.parents;
+package com.example.demo.parent;
 
 import com.example.demo.student.Student;
 import jakarta.persistence.*;

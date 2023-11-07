@@ -1,13 +1,13 @@
 package com.example.demo.student;
 
-import com.example.demo.parents.Parent;
+import com.example.demo.group.Group;
+import com.example.demo.parent.Parent;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -38,6 +38,22 @@ public class Student implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "parent_id")
     )
     private Set<Parent> parents = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private Group group;
+
+    public void setParents(Set<Parent> parents) {
+        this.parents = parents;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
 
     @Column
     private LocalDate dob;
