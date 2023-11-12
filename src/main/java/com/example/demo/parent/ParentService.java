@@ -112,7 +112,7 @@ public class ParentService {
         }
 
         student.addParents(parent);
-        parent.addChildren(student);
+        parent.addChild(student);
         studentRepository.save(student);
         parentRepository.save(parent);
 

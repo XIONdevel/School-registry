@@ -4,6 +4,7 @@ import com.example.demo.student.Student;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -74,9 +75,10 @@ public class Parent {
         return children;
     }
 
-    public void addChildren(Student student) {
+    public void addChild(Student student) {
         children.add(student);
     }
+
 
     public Parent(Long id,
                   String name,
@@ -101,5 +103,9 @@ public class Parent {
     }
 
     public Parent() {
+    }
+
+    public void removeChild(Student student) {
+        this.children.remove(student);
     }
 }

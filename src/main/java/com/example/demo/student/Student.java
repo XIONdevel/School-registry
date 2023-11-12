@@ -43,6 +43,7 @@ public class Student implements Serializable {
     @JoinColumn(name = "group_id")
     private Group group;
 
+
     public void setParents(Set<Parent> parents) {
         this.parents = parents;
     }

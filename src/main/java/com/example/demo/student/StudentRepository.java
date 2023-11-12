@@ -12,9 +12,20 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     boolean existsByPhone(String phone);
 
-    @Query("SELECT s FROM Student s WHERE s.group.id=:groupId")
+    @Query( "SELECT s " +
+            "FROM Student s " +
+            "WHERE s.group.id=:groupId")
     List<Student> findAllFromGroup(@Param(value = "groupId") Long groupId);
 
     boolean existsByEmail(String email);
 
+    Student findStudentByName(String name);
+
+    Student findStudentByEmail(String email);
+
+    Student findStudentByPhone(String phone);
+
+    boolean existsStudentByPhoneAndIdNot(String phone, Long id);
+
+    boolean existsStudentByEmailAndIdNot(String email, Long id);
 }

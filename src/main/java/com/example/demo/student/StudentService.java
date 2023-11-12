@@ -60,21 +60,32 @@ public class StudentService {
         studentRepository.save(student);
     }
 
-    public void editStudent(Long id, Student student) {
-        if (id == null || student == null) {
-            throw new NullPointerException("id:" + id + ", student: " + student);
+    public void editStudent(Long id, Student updatedStudent) {
+        if (id == null || updatedStudent == null) {
+            throw new NullPointerException("id:" + id + ", updatedStudent: " + updatedStudent);
         }
 
-        if (studentRepository.existsById(id)) {
-            studentRepository.deleteById(id);
+        Optional<Student> optionalStudent = studentRepository.findById(id);
+        Student student;
+
+        if (optionalStudent.isPresent()) {
+            student = optionalStudent.get();
+        } else {
+            throw new ExistsException("student with this id does not exists");
         }
 
-        if (serviceUtil.isEmailTaken(student.getEmail())) {
-            throw new ExistsException("email already taken");
+        if (isPhoneTaken(updatedStudent.getPhone(), id)) {
+            throw new ExistsException("phone is taken");
         }
-        if (serviceUtil.isPhoneTaken(student.getPhone())) {
-            throw new ExistsException("phone already taken");
+
+        if (isEmailTaken(updatedStudent.getEmail(), id)) {
+            throw new ExistsException("email is taken");
         }
+
+        student.setName(updatedStudent.getName());
+        student.setSurname(updatedStudent.getSurname());
+        student.setPhone(updatedStudent.getPhone());
+        student.setEmail(updatedStudent.getEmail());
 
         studentRepository.save(student);
     }
@@ -89,7 +100,8 @@ public class StudentService {
             Set<Parent> parents = student.get().getParents();
 
             for (Parent p : parents) {
-                p.getChildren().remove(student);
+                p.removeChild(student.get());
+                parentRepository.save(p);
             }
 
             studentRepository.deleteById(id);
@@ -119,6 +131,7 @@ public class StudentService {
         }
 
         student.removeParent(parent);
+        parent.removeChild(student);
         studentRepository.save(student);
         parentRepository.save(parent);
     }
@@ -156,10 +169,42 @@ public class StudentService {
             throw new ExistsException("this person already this kid parent");
         }
 
-        parent.addChildren(student);
+        parent.addChild(student);
         studentRepository.save(student);
         parentRepository.save(parent);
     }
 
+    public Student findByName(String name) {
+        if (name == null) {
+            throw new NullPointerException("name can not be null");
+        }
+        return studentRepository.findStudentByName(name);
+    }
 
+    public Student findByEmail(String email) {
+        if (email == null) {
+            throw new NullPointerException("email can not be null");
+        }
+        return studentRepository.findStudentByEmail(email);
+    }
+
+    protected boolean isPhoneTaken(String phone, Long currentId) {
+        if (teacherRepository.existsByPhone(phone)
+                || parentRepository.existsByPhone(phone)
+                || studentRepository.existsStudentByPhoneAndIdNot(phone, currentId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected boolean isEmailTaken(String email, Long currentId) {
+        if (teacherRepository.existsByEmail(email)
+                || parentRepository.existsByEmail(email)
+                || studentRepository.existsStudentByPhoneAndIdNot(email, currentId)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

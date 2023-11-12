@@ -50,10 +50,9 @@ public class Group {
         this.name = name;
     }
 
-    public Group(Long id, String name, Teacher teacherLead) {
+    public Group(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.teacherLead = teacherLead;
     }
 
     public boolean isTaken() {
