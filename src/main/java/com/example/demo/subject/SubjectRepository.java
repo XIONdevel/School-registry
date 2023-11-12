@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    Boolean existsSubjectByName(String name);
+    Boolean existsSubjectByNameAndIdNot(String name, Long id);
 
 }
