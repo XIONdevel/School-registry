@@ -7,14 +7,14 @@ import com.example.demo.teacher.TeacherRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
 
-@RestController
-@RequestMapping("api/v1/subjects")
+@Service
 public class SubjectService {
     public static final Logger logger = LoggerFactory.getLogger(SubjectService.class);
     private final SubjectRepository subjectRepository;
@@ -49,6 +49,13 @@ public class SubjectService {
             logger.warn("Given subject is null");
             throw new NullPointerException("subject:" + subject);
         }
+
+        if (subjectRepository
+                .existsSubjectByNameAndIdNot(subject.getName(), subject.getId())) {
+            logger.warn("Name is taken. Can not add new subject");
+            throw new ExistsException("name is taken");
+        }
+
         subjectRepository.save(subject);
         logger.info("Subject successfully saved");
     }
@@ -80,7 +87,7 @@ public class SubjectService {
     public void editSubject(Long id, Subject subject) {
         if (id == null || subject == null) {
             logger.info("Given subject or id is null");
-            throw new NullPointerException("id:" + id + ", subject: " + subject);
+            throw new NullPointerException("Subject or id is null. id:" + id);
         }
 
         if (subjectRepository.existsSubjectByNameAndIdNot(subject.getName(), id)) {
