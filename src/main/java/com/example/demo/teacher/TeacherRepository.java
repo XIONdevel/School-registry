@@ -12,4 +12,7 @@ public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
     boolean existsByEmail(String email);
 
+    boolean existsTeacherByPhoneAndIdNot(String phone, Long id);
+
+    boolean existsTeacherByEmailAndIdNot(String email, Long id);
 }

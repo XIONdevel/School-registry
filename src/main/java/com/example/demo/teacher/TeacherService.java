@@ -6,6 +6,8 @@ import com.example.demo.group.GroupRepository;
 import com.example.demo.subject.Subject;
 import com.example.demo.subject.SubjectRepository;
 import com.example.demo.utils.ServiceUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.util.Optional;
 
 @Service
 public class TeacherService {
+    public static final Logger logger = LoggerFactory.getLogger(TeacherService.class);
     private final TeacherRepository teacherRepository;
     private final SubjectRepository subjectRepository;
     private final GroupRepository groupRepository;
@@ -28,6 +31,7 @@ public class TeacherService {
         this.subjectRepository = subjectRepository;
         this.groupRepository = groupRepository;
         this.serviceUtil = serviceUtil;
+        logger.info("Teacher service initialized");
     }
 
     public List<Teacher> getAll() {
@@ -35,8 +39,15 @@ public class TeacherService {
     }
 
     public Teacher getTeacher(Long id) {
+        if (id == null) {
+            logger.warn("Given id is null");
+            throw new NullPointerException("given id is null");
+        }
+
         Optional<Teacher> teacher = teacherRepository.findById(id);
+
         if (teacher.isEmpty()) {
+            logger.warn("Teacher with given id does not exists");
             throw new ExistsException("Teacher does not exists");
         }
         return teacher.get();
@@ -44,22 +55,27 @@ public class TeacherService {
 
     public void addTeacher(Teacher teacher) {
         if (teacher == null) {
-            throw new NullPointerException("teacher:" + teacher);
+            logger.warn("Given teacher is null");
+            throw new NullPointerException("teacher can not be null");
         }
 
-        if (serviceUtil.isEmailTaken(teacher.getEmail())) {
+        if (teacherRepository.existsTeacherByEmailAndIdNot(teacher.getEmail(), teacher.getId())) {
+            logger.warn("Can not save teacher. Email is taken");
             throw new ExistsException("email is taken");
         }
 
-        if (serviceUtil.isPhoneTaken(teacher.getPhone())) {
+        if (teacherRepository.existsTeacherByPhoneAndIdNot(teacher.getPhone(), teacher.getId())) {
+            logger.warn("Can not save teacher. Phone is taken");
             throw new ExistsException("phone is taken");
         }
 
         teacherRepository.save(teacher);
+        logger.info("Teacher successfully saved");
     }
 
     public void deleteTeacher(Long id) {
         if (id == null) {
+            logger.warn("Given id is null");
             throw new NullPointerException("id can not be null");
         }
 
@@ -67,6 +83,7 @@ public class TeacherService {
         Optional<Teacher> teacherOptional = teacherRepository.findById(id);
 
         if (teacherOptional.isEmpty()) {
+            logger.warn("Teacher with given id does not exists");
             throw new ExistsException("teacher with this id does not exists");
         }
 
@@ -77,25 +94,27 @@ public class TeacherService {
         }
 
         teacherRepository.deleteById(id);
+        logger.info("Teacher deleted successfully");
     }
 
     public void editTeacher(Long id, Teacher teacher) {
         if (id == null || teacher == null) {
-            throw new NullPointerException("id:" + id + ", teacher: " + teacher);
+            logger.warn("Teacher or id is null");
+            throw new NullPointerException("id or teach is null");
         }
 
-        if (teacherRepository.existsById(id)) {
-            teacherRepository.deleteById(id);
+        if (teacherRepository.existsTeacherByPhoneAndIdNot(teacher.getPhone(), id)) {
+            logger.warn("Can not edit teacher. Phone taken");
+            throw new ExistsException("phone is taken");
         }
 
-        if (serviceUtil.isEmailTaken(teacher.getEmail())) {
-            throw new ExistsException("email already taken");
-        }
-        if (serviceUtil.isPhoneTaken(teacher.getPhone())) {
-            throw new ExistsException("phone already taken");
+        if (teacherRepository.existsTeacherByEmailAndIdNot(teacher.getEmail(), id)) {
+            logger.warn("Can not edit teacher. Email taken");
+            throw new ExistsException("email is taken");
         }
 
         teacherRepository.save(teacher);
+        logger.info("Teacher successfully saved");
     }
 
     public void addSubject(Long teacherId, Long subjectId) {
@@ -103,10 +122,12 @@ public class TeacherService {
         Optional<Subject> optionalSubject = subjectRepository.findById(subjectId);
 
         if (optionalTeacher.isEmpty()) {
+            logger.warn("Teacher with given id does not exists");
             throw new ExistsException("teacher with this id does not exists");
         }
 
         if (optionalSubject.isEmpty()) {
+            logger.warn("Subject with given id does not exists");
             throw new ExistsException("subject with this id does not exists");
         }
 
@@ -114,17 +135,19 @@ public class TeacherService {
         Teacher teacher = optionalTeacher.get();
 
         if (subject.getTeachers().contains(teacher)) {
-            throw new ExistsException("this subject already taken by this teacher");
+            logger.warn("Subject already taken by this teacher");
         }
 
         if (teacher.getSubjects().contains(subject)) {
-            throw new ExistsException("this teacher already have this subject");
+            logger.warn("This teacher already have this subject");
         }
 
         subject.addTeacher(teacher);
         teacher.addSubject(subject);
         subjectRepository.save(subject);
+        logger.info("Subject successfully saved");
         teacherRepository.save(teacher);
+        logger.info("Teacher successfully saved");
     }
 
     public void removeSubject(Long teacherId, Long subjectId) {
@@ -132,10 +155,12 @@ public class TeacherService {
         Optional<Subject> optionalSubject = subjectRepository.findById(subjectId);
 
         if (optionalTeacher.isEmpty()) {
+            logger.warn("Teacher with given id does not exists");
             throw new ExistsException("teacher with this id does not exists");
         }
 
         if (optionalSubject.isEmpty()) {
+            logger.warn("Subject with given id does not exists");
             throw new ExistsException("subject with this id does not exists");
         }
 
@@ -144,12 +169,15 @@ public class TeacherService {
 
         teacher.removeSubject(subject);
         subject.removeTeacher(teacher);
-        teacherRepository.save(teacher);
         subjectRepository.save(subject);
+        logger.info("Subject successfully saved");
+        teacherRepository.save(teacher);
+        logger.info("Teacher successfully saved");
     }
 
     public void addGroup(Long groupId, Long teacherId) {
         if (groupId == null || teacherId == null) {
+            logger.warn("Some value is null while adding group to teacher");
             throw new NullPointerException("group & teacher ids can not equals null");
         }
 
@@ -157,10 +185,12 @@ public class TeacherService {
         Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
 
         if (optionalTeacher.isEmpty()) {
+            logger.warn("Teacher with given id does not exists");
             throw new ExistsException("teacher with this id does not exists");
         }
 
         if (optionalGroup.isEmpty()) {
+            logger.warn("Group with given id does not exists");
             throw new ExistsException("group with this id does not exists");
         }
 
@@ -168,17 +198,19 @@ public class TeacherService {
         Group group = optionalGroup.get();
 
         if (group.isTaken()) {
-            throw new ExistsException("this group already taken");
+            logger.info("Group already taken");
         }
 
         if (teacher.getGroup() != null) {
-            throw new ExistsException("this teacher already have a group");
+            logger.info("This teacher already have this group");
         }
 
         group.addTeacherLead(teacher);
         teacher.addGroup(group);
         groupRepository.save(group);
+        logger.info("Group saved successfully");
         teacherRepository.save(teacher);
+        logger.info("Teacher saved successfully");
     }
 
     public void removeGroup(Long groupId, Long teacherId) {
@@ -200,20 +232,12 @@ public class TeacherService {
         Teacher teacher = optionalTeacher.get();
         Group group = optionalGroup.get();
 
-        if (!group.isTaken()) {
-            throw new ExistsException("this group is not taken");
-        }
-
-        if (teacher.getGroup() == null) {
-            throw new ExistsException("this teacher does not have a group");
-        }
-
         group.removeTeacher();
         teacher.removeGroup();
+
         groupRepository.save(group);
+        logger.info("Group saved successfully");
         teacherRepository.save(teacher);
+        logger.info("Teacher saved successfully");
     }
-
-
-
 }
