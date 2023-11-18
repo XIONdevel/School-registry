@@ -5,13 +5,27 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
-    @Query(value = "SELECT e FROM Student e WHERE e.phone=:phone")
-    Student findByPhone_number(@Param("phone") String phone);
+    boolean existsByPhone(String phone);
 
+    @Query( "SELECT s " +
+            "FROM Student s " +
+            "WHERE s.group.id=:groupId")
+    List<Student> findAllFromGroup(@Param(value = "groupId") Long groupId);
 
+    boolean existsByEmail(String email);
 
+    Student findStudentByName(String name);
 
+    Student findStudentByEmail(String email);
+
+    Student findStudentByPhone(String phone);
+
+    boolean existsStudentByPhoneAndIdNot(String phone, Long id);
+
+    boolean existsStudentByEmailAndIdNot(String email, Long id);
 }

@@ -1,0 +1,58 @@
+2023-11-16T12:31:40.466Z  INFO 18360 --- [main] com.example.demo.SpringWebApplication    : Starting SpringWebApplication using Java 17.0.8 with PID 18360 (D:\demo\target\classes started by Ihor in D:\demo)
+2023-11-16T12:31:40.472Z DEBUG 18360 --- [main] com.example.demo.SpringWebApplication    : Running with Spring Boot v3.1.5, Spring v6.0.13
+2023-11-16T12:31:40.473Z  INFO 18360 --- [main] com.example.demo.SpringWebApplication    : No active profile set, falling back to 1 default profile: "default"
+2023-11-16T12:31:42.424Z  INFO 18360 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-11-16T12:31:42.538Z  INFO 18360 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 100 ms. Found 5 JPA repository interfaces.
+2023-11-16T12:31:43.264Z  INFO 18360 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-11-16T12:31:43.281Z  INFO 18360 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-11-16T12:31:43.281Z  INFO 18360 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2023-11-16T12:31:43.395Z  INFO 18360 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-11-16T12:31:43.396Z  INFO 18360 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2863 ms
+2023-11-16T12:31:43.621Z  INFO 18360 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-11-16T12:31:43.720Z  INFO 18360 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.13.Final
+2023-11-16T12:31:43.724Z  INFO 18360 --- [main] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2023-11-16T12:31:44.165Z  INFO 18360 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-11-16T12:31:44.213Z  INFO 18360 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-11-16T12:31:44.645Z  INFO 18360 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1fb6b8fb
+2023-11-16T12:31:44.647Z  INFO 18360 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-11-16T12:31:46.410Z  INFO 18360 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2023-11-16T12:31:46.629Z  INFO 18360 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-11-16T12:31:47.121Z  INFO 18360 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2023-11-16T12:31:47.753Z  INFO 18360 --- [main] c.example.demo.student.StudentService    : Student service initialization finished
+2023-11-16T12:31:47.773Z  INFO 18360 --- [main] c.example.demo.subject.SubjectService    : Subject service initialized
+2023-11-16T12:31:47.775Z  INFO 18360 --- [main] c.example.demo.teacher.TeacherService    : Teacher service initialized
+2023-11-16T12:31:48.327Z  INFO 18360 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-11-16T12:31:48.335Z  INFO 18360 --- [main] com.example.demo.SpringWebApplication    : Started SpringWebApplication in 8.511 seconds (process running for 12.198)
+2023-11-16T15:24:08.641Z  INFO 18360 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-11-16T15:24:08.669Z  INFO 18360 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2023-11-16T15:24:08.684Z  INFO 18360 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2023-11-16T15:24:12.839Z  INFO 20008 --- [main] com.example.demo.SpringWebApplication    : Starting SpringWebApplication using Java 17.0.8 with PID 20008 (D:\demo\target\classes started by Ihor in D:\demo)
+2023-11-16T15:24:12.841Z DEBUG 20008 --- [main] com.example.demo.SpringWebApplication    : Running with Spring Boot v3.1.5, Spring v6.0.13
+2023-11-16T15:24:12.842Z  INFO 20008 --- [main] com.example.demo.SpringWebApplication    : No active profile set, falling back to 1 default profile: "default"
+2023-11-16T15:24:13.730Z  INFO 20008 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-11-16T15:24:13.824Z  INFO 20008 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 83 ms. Found 5 JPA repository interfaces.
+2023-11-16T15:24:14.593Z  INFO 20008 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2023-11-16T15:24:14.609Z  INFO 20008 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-11-16T15:24:14.610Z  INFO 20008 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.15]
+2023-11-16T15:24:14.726Z  INFO 20008 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2023-11-16T15:24:14.727Z  INFO 20008 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1819 ms
+2023-11-16T15:24:14.941Z  INFO 20008 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-11-16T15:24:15.035Z  INFO 20008 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.2.13.Final
+2023-11-16T15:24:15.038Z  INFO 20008 --- [main] org.hibernate.cfg.Environment            : HHH000406: Using bytecode reflection optimizer
+2023-11-16T15:24:15.466Z  INFO 20008 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-11-16T15:24:15.514Z  INFO 20008 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-11-16T15:24:15.806Z  INFO 20008 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@690df641
+2023-11-16T15:24:15.808Z  INFO 20008 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-11-16T15:24:18.354Z  INFO 20008 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2023-11-16T15:24:18.611Z  INFO 20008 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-11-16T15:24:19.407Z  INFO 20008 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2023-11-16T15:24:20.474Z  INFO 20008 --- [main] com.example.demo.group.GroupService      : Group service initialized
+2023-11-16T15:24:20.517Z  INFO 20008 --- [main] c.example.demo.student.StudentService    : Student service initialization finished
+2023-11-16T15:24:20.548Z  INFO 20008 --- [main] c.example.demo.subject.SubjectService    : Subject service initialized
+2023-11-16T15:24:20.552Z  INFO 20008 --- [main] c.example.demo.teacher.TeacherService    : Teacher service initialized
+2023-11-16T15:24:21.241Z  INFO 20008 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2023-11-16T15:24:21.251Z  INFO 20008 --- [main] com.example.demo.SpringWebApplication    : Started SpringWebApplication in 9.083 seconds (process running for 9.94)
+2023-11-16T17:56:09.286Z  WARN 20008 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=6m50s906ms55µs900ns).
+2023-11-16T17:56:12.724Z  INFO 20008 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-11-16T17:56:12.739Z  INFO 20008 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2023-11-16T17:56:12.753Z  INFO 20008 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

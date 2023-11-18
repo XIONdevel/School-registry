@@ -8,39 +8,50 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/v1/students")
 public class StudentController {
-
     private final StudentService service;
 
     @Autowired
-    public StudentController(StudentService service) {
+    StudentController(StudentService service) {
         this.service = service;
     }
 
-    @GetMapping()
-    public List<Student> fullList() {
+    @GetMapping
+    public List<Student> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public Student getStudents(@PathVariable Long id) {
+    public Student getStudent(@PathVariable Long id) {
         return service.getStudent(id);
     }
 
-    @PostMapping("/add")
-    public void insertStudent(@RequestBody Student student) {
-        service.addStudent(student);
-    }
-
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}/delete")
     public void deleteStudent(@PathVariable Long id) {
         service.deleteStudent(id);
     }
 
-    @PutMapping("/edit")
-    public void editStudent(@RequestBody Student student) {
-        service.updateStudent(student);
+    @PostMapping("/add")
+    public void addStudent(Student student) {
+        service.addStudent(student);
     }
 
+    @PutMapping("/{id}/edit")
+    public void editStudent(@PathVariable Long id,
+                     @RequestBody Student student) {
+        service.editStudent(id, student);
+    }
+
+    @PutMapping("/{studentId}/parents/remove/{parentId}")
+    public void removeParent(@PathVariable Long parentId,
+                      @PathVariable Long studentId) {
+        service.deleteParent(parentId, studentId);
+    }
+
+    @PutMapping("/{studentId}/parents/add/{parentId}")
+    public void addParent(@PathVariable Long parentId,
+                      @PathVariable Long studentId) {
+        service.addParent(parentId, studentId);
+    }
 
 
 }

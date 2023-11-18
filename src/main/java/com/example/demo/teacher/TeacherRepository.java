@@ -8,14 +8,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TeacherRepository extends JpaRepository<Teacher, Long> {
 
-    Teacher findTeacherByEmail(@Param("email") String email);
+    boolean existsByPhone(String phone);
 
-//    @Query("SELECT s FROM Teacher s WHERE s.phone = :phone")
-    Teacher findTeacherByPhone(@Param("phone") String phone);
+    boolean existsByEmail(String email);
 
-    Boolean existsTeacherByEmail(@Param("Email") String email);
+    boolean existsTeacherByPhoneAndIdNot(String phone, Long id);
 
-//    @Query("SELECT COUNT(s) FROM Teacher s WHERE s.phone=:phone")
-    Boolean existsTeacherByPhone(@Param("phone") String phone);
-
+    boolean existsTeacherByEmailAndIdNot(String email, Long id);
 }
