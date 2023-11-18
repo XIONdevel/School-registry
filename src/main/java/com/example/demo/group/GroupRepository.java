@@ -7,4 +7,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     Boolean existsByName(String name);
 
+    Boolean existsGroupByNameAndIdNot(String name, Long id);
+
 }

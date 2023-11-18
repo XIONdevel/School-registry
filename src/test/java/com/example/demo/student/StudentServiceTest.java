@@ -200,7 +200,7 @@ class StudentServiceTest {
         assertThatThrownBy(
                 () -> studentService.editStudent(null, null))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("id:" + id + ", updatedStudent: " + updatedStudent);
+                .hasMessageContaining("id or updated student is null");
     }
 
     @Test

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ServiceUtil {
-    //add new repositories here
     private final ParentRepository parentRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
@@ -22,17 +21,32 @@ public class ServiceUtil {
         this.teacherRepository = teacherRepository;
     }
 
-    public boolean isEmailTaken(String email) {
-        if (email == null) {
+    public boolean isPhoneTakenIdNot(String phone, Long id) {
+        if (phone == null || id == null) {
             return false;
         }
 
-        if (studentRepository.existsByEmail(email) ||
-                teacherRepository.existsByEmail(email) ||
-                parentRepository.existsByEmail(email)) {
+        if (studentRepository.existsStudentByPhoneAndIdNot(phone, id)
+            || teacherRepository.existsTeacherByPhoneAndIdNot(phone, id)
+            || parentRepository.existsParentByPhoneAndIdNot(phone, id)) {
             return true;
+        } else {
+            return false;
         }
-        return false;
+    }
+
+    public boolean isEmailTakenIdNot(String email, Long id) {
+        if (email == null || id == null) {
+            return false;
+        }
+
+        if (studentRepository.existsStudentByEmailAndIdNot(email, id)
+            || teacherRepository.existsTeacherByEmailAndIdNot(email, id)
+            || parentRepository.existsParentByEmailAndIdNot(email, id)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean isPhoneTaken(String phone) {
@@ -40,15 +54,20 @@ public class ServiceUtil {
             return false;
         }
 
-        if (studentRepository.existsByPhone(phone) ||
+        return studentRepository.existsByPhone(phone) ||
                 teacherRepository.existsByPhone(phone) ||
-                parentRepository.existsByPhone(phone)) {
-            return true;
-        }
-        return false;
+                parentRepository.existsByPhone(phone);
     }
 
+    public boolean isEmailTaken(String email) {
+        if (email == null) {
+            return false;
+        }
 
+        return studentRepository.existsByEmail(email) ||
+                teacherRepository.existsByEmail(email) ||
+                parentRepository.existsByEmail(email);
+    }
 
 
 }

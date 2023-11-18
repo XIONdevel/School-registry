@@ -13,5 +13,8 @@ public interface ParentRepository extends JpaRepository<Parent, Long> {
 
     boolean existsByEmail(String email);
 
+    boolean existsParentByEmailAndIdNot(String email, Long id);
+
+    boolean existsParentByPhoneAndIdNot(String phone, Long id);
 
 }

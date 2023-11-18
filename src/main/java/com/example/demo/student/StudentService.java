@@ -71,8 +71,8 @@ public class StudentService {
 
     public void editStudent(Long id, Student updatedStudent) {
         if (id == null || updatedStudent == null) {
-            logger.warn("Some value is null while editing student. " + "id:" + id + ", updatedStudent: " + updatedStudent);
-            throw new NullPointerException("id:" + id + ", updatedStudent: " + updatedStudent);
+            logger.warn("Some value is null while editing student.");
+            throw new NullPointerException("id or updated student is null");
         }
 
         Optional<Student> optionalStudent = studentRepository.findById(id);

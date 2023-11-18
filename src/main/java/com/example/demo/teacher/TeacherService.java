@@ -3,6 +3,8 @@ package com.example.demo.teacher;
 import com.example.demo.exception.ExistsException;
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
+import com.example.demo.parent.ParentRepository;
+import com.example.demo.student.StudentRepository;
 import com.example.demo.subject.Subject;
 import com.example.demo.subject.SubjectRepository;
 import com.example.demo.utils.ServiceUtil;
@@ -18,16 +20,22 @@ import java.util.Optional;
 public class TeacherService {
     public static final Logger logger = LoggerFactory.getLogger(TeacherService.class);
     private final TeacherRepository teacherRepository;
+    private final StudentRepository studentRepository;
+    private final ParentRepository parentRepository;
     private final SubjectRepository subjectRepository;
     private final GroupRepository groupRepository;
     private final ServiceUtil serviceUtil;
 
     @Autowired
     public TeacherService(TeacherRepository teacherRepository,
+                          StudentRepository studentRepository,
+                          ParentRepository parentRepository,
                           SubjectRepository subjectRepository,
                           GroupRepository groupRepository,
                           ServiceUtil serviceUtil) {
         this.teacherRepository = teacherRepository;
+        this.studentRepository = studentRepository;
+        this.parentRepository = parentRepository;
         this.subjectRepository = subjectRepository;
         this.groupRepository = groupRepository;
         this.serviceUtil = serviceUtil;
@@ -59,12 +67,12 @@ public class TeacherService {
             throw new NullPointerException("teacher can not be null");
         }
 
-        if (teacherRepository.existsTeacherByEmailAndIdNot(teacher.getEmail(), teacher.getId())) {
+        if (serviceUtil.isEmailTaken(teacher.getEmail())) {
             logger.warn("Can not save teacher. Email is taken");
             throw new ExistsException("email is taken");
         }
 
-        if (teacherRepository.existsTeacherByPhoneAndIdNot(teacher.getPhone(), teacher.getId())) {
+        if (serviceUtil.isPhoneTaken(teacher.getPhone())) {
             logger.warn("Can not save teacher. Phone is taken");
             throw new ExistsException("phone is taken");
         }
@@ -103,16 +111,17 @@ public class TeacherService {
             throw new NullPointerException("id or teach is null");
         }
 
-        if (teacherRepository.existsTeacherByPhoneAndIdNot(teacher.getPhone(), id)) {
+        if (isPhoneTaken(teacher.getPhone(), id)) {
             logger.warn("Can not edit teacher. Phone taken");
             throw new ExistsException("phone is taken");
         }
 
-        if (teacherRepository.existsTeacherByEmailAndIdNot(teacher.getEmail(), id)) {
+        if (isEmailTaken(teacher.getEmail(), id)) {
             logger.warn("Can not edit teacher. Email taken");
             throw new ExistsException("email is taken");
         }
 
+        teacher.setId(id);
         teacherRepository.save(teacher);
         logger.info("Teacher successfully saved");
     }
@@ -239,5 +248,25 @@ public class TeacherService {
         logger.info("Group saved successfully");
         teacherRepository.save(teacher);
         logger.info("Teacher saved successfully");
+    }
+
+    protected boolean isEmailTaken(String email, Long teacherId) {
+        if (email == null || teacherId == null) {
+            return false;
+        }
+
+        return studentRepository.existsByEmail(email) ||
+                teacherRepository.existsTeacherByEmailAndIdNot(email, teacherId) ||
+                parentRepository.existsByEmail(email);
+    }
+
+    protected boolean isPhoneTaken(String phone, Long teacherId) {
+        if (phone == null || teacherId == null) {
+            return false;
+        }
+
+        return studentRepository.existsByPhone(phone) ||
+                teacherRepository.existsTeacherByPhoneAndIdNot(phone, teacherId) ||
+                parentRepository.existsByPhone(phone);
     }
 }

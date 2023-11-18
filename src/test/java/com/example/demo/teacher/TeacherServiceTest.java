@@ -3,6 +3,8 @@ package com.example.demo.teacher;
 import com.example.demo.exception.ExistsException;
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
+import com.example.demo.parent.ParentRepository;
+import com.example.demo.student.StudentRepository;
 import com.example.demo.subject.Subject;
 import com.example.demo.subject.SubjectRepository;
 import com.example.demo.utils.ServiceUtil;
@@ -29,6 +31,10 @@ class TeacherServiceTest {
     @Mock
     private TeacherRepository teacherRepository;
     @Mock
+    private StudentRepository studentRepository;
+    @Mock
+    private ParentRepository parentRepository;
+    @Mock
     private SubjectRepository subjectRepository;
     @Mock
     private GroupRepository groupRepository;
@@ -40,6 +46,8 @@ class TeacherServiceTest {
     void setUp() {
         service = new TeacherService(
                 teacherRepository,
+                studentRepository,
+                parentRepository,
                 subjectRepository,
                 groupRepository,
                 serviceUtil
@@ -109,7 +117,7 @@ class TeacherServiceTest {
         teacher.setEmail(email);
         teacher.setPhone(phone);
 
-        when(teacherRepository.existsTeacherByEmailAndIdNot(email, id))
+        when(serviceUtil.isEmailTaken(email))
                 .thenReturn(true);
         //when
         //then
@@ -130,10 +138,10 @@ class TeacherServiceTest {
         teacher.setEmail(email);
         teacher.setPhone(phone);
 
-        when(teacherRepository.existsTeacherByEmailAndIdNot(email, id))
+        when(serviceUtil.isEmailTaken(email))
                 .thenReturn(false);
 
-        when(teacherRepository.existsTeacherByPhoneAndIdNot(phone, id))
+        when(serviceUtil.isPhoneTaken(phone))
                 .thenReturn(true);
         //when
         //then
