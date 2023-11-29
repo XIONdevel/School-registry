@@ -44,7 +44,7 @@ public class Student implements Serializable {
     private Group group;
 
 
-    public void setParents(Set<Parent> parents) {
+    protected void setParents(Set<Parent> parents) {
         this.parents = parents;
     }
 
