@@ -44,7 +44,7 @@ public class GradeService {
     }
 
 
-    public List<Grade> getForStudentByDate(Long studentId, LocalDate date) {
+    public List<Grade>  getForStudentByDate(Long studentId, LocalDate date) {
         Optional<Student> optionalStudent = studentRepository.findById(studentId);
 
         if (optionalStudent.isEmpty()) {
@@ -61,7 +61,10 @@ public class GradeService {
     }
 
     public List<Grade> getForStudentByDate(
-            Long studentId, LocalDate startDate, LocalDate endDate) {
+            Long studentId,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
         Optional<Student> optionalStudent = studentRepository.findById(studentId);
 
         if (optionalStudent.isEmpty()) {
@@ -215,14 +218,16 @@ public class GradeService {
         if (isGradeValid(grade)) {
             grade.setId(null);
             gradeRepository.save(grade);
+            logger.info("Grade was saved successfully");
         } else {
-            logger.warn("Given grade is not valid. Termination of operation.");
+            logger.warn("Given grade is not valid. Termination of operation. {}", grade.toString());
             throw new IllegalArgumentException("Given grade is not valid");
         }
     }
 
     public void deleteGrade(Long gradeId) {
         gradeRepository.deleteById(gradeId);
+        logger.info("Grade was deleted successfully");
     }
 
     protected boolean isGradeValid(Grade grade) {
@@ -230,24 +235,6 @@ public class GradeService {
                         grade.getStudent() != null &&
                         grade.getTeacher() != null &&
                         grade.getSubject() != null);
-    }
-
-    protected boolean isDateValid(Date date) {
-        final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date startDate;
-
-        try {
-            startDate = sdf.parse(launchDate);
-        } catch (ParseException e) {
-            logger.warn("Exception while parsing start date. Termination of operation.");
-            return false;
-        }
-
-        if (date == null || date.before(startDate) || date.after(new Date())) {
-            logger.warn("Given date is not correct. Termination of operation");
-            return false;
-        }
-        return true;
     }
 
     protected boolean isDateValid(LocalDate date) {

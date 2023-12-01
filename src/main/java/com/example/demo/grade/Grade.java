@@ -32,18 +32,27 @@ public class Grade {
 
     @OneToOne
     @JoinColumn(name = "subject_id")
-    @Column(nullable = false)
     private Subject subject;
 
     @OneToOne
     @JoinColumn(name = "student_id")
-    @Column(nullable = false)
     private Student student;
 
     @OneToOne
     @JoinColumn(name = "teacher_id")
-    @Column(nullable = false)
     private Teacher teacher;
+
+    @Override
+    public String toString() {
+        return "Grade: " +
+                "id=" + id +
+                ", grade=" + value +
+                ", date=" + date +
+                ", subject id=" + subject.getId() +
+                ", student id=" + student.getId() +
+                ", teacher id=" + teacher.getId() +
+                '}';
+    }
 }
 
 
