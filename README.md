@@ -1,5 +1,11 @@
 # School-registry
 In progress
 
-Simple web application which now can only save info about students/teacher/visitors
+Web application, school registration system which can control students, school personal, grades
+
+In future: 
+  additional pesonal
+  visitors
+  authentication
+  gui
 
