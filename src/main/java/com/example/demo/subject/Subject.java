@@ -4,6 +4,7 @@ import com.example.demo.teacher.Teacher;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity

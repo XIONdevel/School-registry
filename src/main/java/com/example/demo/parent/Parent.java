@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "parent")
-public class Parent {
+public class Parent{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
