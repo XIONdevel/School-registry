@@ -1,29 +1,28 @@
 package com.example.demo.student;
 
+import com.example.demo.group.Group;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
     boolean existsByPhone(String phone);
 
-    @Query( "SELECT s " +
-            "FROM Student s " +
-            "WHERE s.group.id=:groupId")
-    List<Student> findAllFromGroup(@Param(value = "groupId") Long groupId);
+    List<Student> findAllByGroup(Group group);
 
     boolean existsByEmail(String email);
 
-    Student findStudentByName(String name);
+    Optional<Student> findStudentByName(String name);
 
-    Student findStudentByEmail(String email);
+    Optional<Student> findStudentByEmail(String email);
 
-    Student findStudentByPhone(String phone);
+    Optional<Student> findStudentByPhone(String phone);
 
     boolean existsStudentByPhoneAndIdNot(String phone, Long id);
 

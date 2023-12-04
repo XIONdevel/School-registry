@@ -1,6 +1,7 @@
 package com.example.demo.student;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "api/v1/students")
 public class StudentController {
+
     private final StudentService service;
 
     @Autowired
@@ -21,8 +23,9 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public Student getStudent(@PathVariable Long id) {
-        return service.getStudent(id);
+    public ResponseEntity<Student> getStudent(@PathVariable Long id) {
+        Student student = service.getStudent(id);
+        return ResponseEntity.ok(student);
     }
 
     @DeleteMapping("/{id}/delete")
@@ -37,19 +40,21 @@ public class StudentController {
 
     @PutMapping("/{id}/edit")
     public void editStudent(@PathVariable Long id,
-                     @RequestBody Student student) {
+                            @RequestBody Student student) {
         service.editStudent(id, student);
     }
 
     @PutMapping("/{studentId}/parents/remove/{parentId}")
-    public void removeParent(@PathVariable Long parentId,
-                      @PathVariable Long studentId) {
+    public void removeParent(
+            @PathVariable Long parentId,
+            @PathVariable Long studentId) {
         service.deleteParent(parentId, studentId);
     }
 
     @PutMapping("/{studentId}/parents/add/{parentId}")
-    public void addParent(@PathVariable Long parentId,
-                      @PathVariable Long studentId) {
+    public void addParent(
+            @PathVariable Long parentId,
+            @PathVariable Long studentId) {
         service.addParent(parentId, studentId);
     }
 

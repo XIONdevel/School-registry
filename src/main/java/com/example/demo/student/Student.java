@@ -4,31 +4,31 @@ import com.example.demo.group.Group;
 import com.example.demo.parent.Parent;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+@Builder
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "Student")
 public class Student implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 50)
     private String name;
-
-    @Column(length = 50)
     private String surname;
-
-    @Column(length = 50,
-            unique = true)
+    @Column(unique = true)
     private String phone;
-
-    @Column(length = 50)
+    @Column(unique = true)
     private String email;
+    private LocalDate dob;
 
     @JsonIgnore
     @ManyToMany (cascade = CascadeType.ALL)
@@ -43,11 +43,6 @@ public class Student implements Serializable {
     @JoinColumn(name = "group_id")
     private Group group;
 
-
-    protected void setParents(Set<Parent> parents) {
-        this.parents = parents;
-    }
-
     public Group getGroup() {
         return group;
     }
@@ -55,9 +50,6 @@ public class Student implements Serializable {
     public void setGroup(Group group) {
         this.group = group;
     }
-
-    @Column
-    private LocalDate dob;
 
     public Long getId() {
         return id;
@@ -119,20 +111,6 @@ public class Student implements Serializable {
         this.dob = dob;
     }
 
-    public Student(Long id,
-                   String name,
-                   String surname,
-                   String phone,
-                   String email,
-                   LocalDate dob) {
-        this.id = id;
-        this.name = name;
-        this.surname = surname;
-        this.phone = phone;
-        this.email = email;
-        this.dob = dob;
-    }
-
     public Student(String name,
                    String surname,
                    String phone,
@@ -145,6 +123,17 @@ public class Student implements Serializable {
         this.dob = dob;
     }
 
-    public Student() {
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", phone='" + phone + '\'' +
+                ", email='" + email + '\'' +
+                ", dob=" + dob +
+                ", parents=" + parents +
+                ", group=" + group +
+                '}';
     }
 }
