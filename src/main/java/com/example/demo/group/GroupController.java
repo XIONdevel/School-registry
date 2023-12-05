@@ -1,9 +1,13 @@
 package com.example.demo.group;
 
+import com.example.demo.grade.Grade;
 import com.example.demo.student.Student;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -17,46 +21,62 @@ public class GroupController {
     }
 
     @GetMapping
-    public List<Group> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Group>> getAll() {
+        List<Group> list = service.getAll();
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public Group getGroup(@PathVariable Long id) {
-        return service.getGroup(id);
+    public ResponseEntity<Group> getGroup(@PathVariable Long id) {
+        Group group = service.getGroup(id);
+        return ResponseEntity.ok(group);
     }
 
     @DeleteMapping("/{id}/delete")
-    public void deleteGroup(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
         service.deleteGroup(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/new")
-    public void newGroup(@RequestBody Group group) {
+    public ResponseEntity<Void> newGroup(@RequestBody Group group) {
         service.addNewGroup(group);
+        Long id = service.getByName(group.getName()).getId();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(id)
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 
     @PutMapping("/{id}/edit")
-    public void editGroup(@PathVariable Long id,
-                          @RequestBody Group group) {
+    public ResponseEntity<Void> editGroup(
+            @PathVariable Long id,
+            @RequestBody Group group) {
         service.editGroup(id, group);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{groupId}/add/teacher/{teacherId}")
-    public void addTeacher(@PathVariable Long groupId,
-                           @PathVariable Long teacherId) {
+    public ResponseEntity<Void> addTeacher(
+            @PathVariable Long groupId,
+            @PathVariable Long teacherId) {
         service.addTeacher(groupId, teacherId);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{groupId}/remove/teacher/{teacherId}")
-    public void removeTeacher(@PathVariable Long groupId,
-                           @PathVariable Long teacherId) {
+    public ResponseEntity<Void> removeTeacher(
+            @PathVariable Long groupId,
+            @PathVariable Long teacherId) {
         service.removeTeacher(groupId, teacherId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/students")
-    public List<Student> getStudents(@PathVariable Long id) {
-        return service.getAllStudents(id);
+    public ResponseEntity<List<Student>> getStudents(@PathVariable Long id) {
+        List<Student> list = service.getAllStudents(id);
+        return ResponseEntity.ok(list);
     }
 
 }

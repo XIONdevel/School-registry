@@ -2,8 +2,11 @@ package com.example.demo.subject;
 
 import com.example.demo.teacher.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -17,40 +20,50 @@ public class SubjectController {
     }
 
     @GetMapping
-    public List<Subject> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Subject>> getAll() {
+        List<Subject> list = service.getAll();
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public Subject getSubject(@PathVariable Long id) {
-        return service.getSubject(id);
+    public ResponseEntity<Subject> getSubject(@PathVariable Long id) {
+        Subject subject = service.getSubject(id);
+        return ResponseEntity.ok(subject);
     }
 
     @PostMapping("/add")
-    public void addSubject(Subject subject) {
+    public ResponseEntity<Void> addSubject(Subject subject) {
         service.addSubject(subject);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/edit")
-    public void updateSubject(@RequestBody Subject subject,
-                              @PathVariable Long id) {
+    public ResponseEntity<Void> updateSubject(
+            @RequestBody Subject subject,
+            @PathVariable Long id) {
         service.editSubject(id, subject);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}/delete")
-    public void deleteSubject(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSubject(@PathVariable Long id) {
         service.deleteSubject(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{subjectId}/subjects/add/{teacherId}")
-    public void addTeacher(@PathVariable Long subjectId,
-                           @PathVariable Long teacherId) {
+    public ResponseEntity<Void> addTeacher(
+            @PathVariable Long subjectId,
+            @PathVariable Long teacherId) {
         service.addTeacher(teacherId, subjectId);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{subjectId}/subjects/remove/{teacherId}")
-    public void removeTeacher(@PathVariable Long subjectId,
-                              @PathVariable Long teacherId) {
+    public ResponseEntity<Void> removeTeacher(
+            @PathVariable Long subjectId,
+            @PathVariable Long teacherId) {
         service.removeTeacher(teacherId, subjectId);
+        return ResponseEntity.noContent().build();
     }
 }

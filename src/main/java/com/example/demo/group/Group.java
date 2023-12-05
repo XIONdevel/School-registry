@@ -1,17 +1,21 @@
 package com.example.demo.group;
 
-import com.example.demo.student.Student;
 import com.example.demo.teacher.Teacher;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "group")
 public class Group {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
-
     @Column (unique = true)
     private String name;
 
@@ -41,9 +45,6 @@ public class Group {
 
     public void addTeacherLead(Teacher teacherLead) {
         this.teacherLead = teacherLead;
-    }
-
-    public Group() {
     }
 
     public Group(String name) {

@@ -3,10 +3,14 @@ package com.example.demo.group;
 import com.example.demo.student.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface GroupRepository extends JpaRepository<Group, Long> {
 
-    Boolean existsByName(String name);
+    boolean existsByName(String name);
 
-    Boolean existsGroupByNameAndIdNot(String name, Long id);
+    boolean existsGroupByNameAndIdNot(String name, Long id);
+
+    Optional<Group> findByName(String name);
 
 }

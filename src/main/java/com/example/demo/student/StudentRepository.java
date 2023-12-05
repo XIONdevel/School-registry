@@ -27,4 +27,6 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     boolean existsStudentByPhoneAndIdNot(String phone, Long id);
 
     boolean existsStudentByEmailAndIdNot(String email, Long id);
+
+    List<Student> findAllFromGroup(Long groupId);
 }

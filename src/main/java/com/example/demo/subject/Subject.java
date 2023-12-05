@@ -2,21 +2,23 @@ package com.example.demo.subject;
 
 import com.example.demo.teacher.Teacher;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "subject")
 public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column
     private String name;
-
     @ManyToMany(mappedBy = "subjects")
     private Set<Teacher> teachers = new HashSet<>();
 
@@ -39,9 +41,6 @@ public class Subject {
 
     public Subject(String name) {
         this.name = name;
-    }
-
-    public Subject() {
     }
 
     public Long getId() {

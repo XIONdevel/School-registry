@@ -238,4 +238,19 @@ public class StudentService {
                 || parentRepository.existsByEmail(email)
                 || studentRepository.existsStudentByPhoneAndIdNot(email, currentId);
     }
+
+    public Student getByEmail(String email) {
+        if (email == null) {
+            logger.error("Given email is null. Termination of operation.");
+            throw new NullPointerException("Given email is null.");
+        }
+
+        Optional<Student> optionalStudent = studentRepository.findStudentByEmail(email);
+
+        if (optionalStudent.isEmpty()) {
+            logger.error("Student with given email not found. Termination of operation.");
+            throw new StudentNotFoundException("Student with given email not found.");
+        }
+        return optionalStudent.get();
+    }
 }
