@@ -66,7 +66,7 @@ class StudentRepositoryTest {
         repository.saveAll(List.of(studentOne, studentTwo));
 
         //when
-        List<Student> students = repository.findAllFromGroup(group.getId());
+        List<Student> students = repository.findAllByGroup(group);
 
         //then
         assertThat(students.size()).isEqualTo(2);

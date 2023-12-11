@@ -4,35 +4,30 @@ import com.example.demo.group.Group;
 import com.example.demo.subject.Subject;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "Teacher")
 public class Teacher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(length = 50)
     private String name;
-
-    @Column(length = 50)
     private String surname;
-
-    @Column(length = 50,
-            unique = true)
+    @Column(unique = true)
     private String phone;
-
     private LocalDate dob;
-
-    @Column(length = 50)
     private String position;
-
-    @Column(length = 50,
-            unique = true)
+    @Column(unique = true)
     private String email;
 
     @JsonIgnore
@@ -151,9 +146,6 @@ public class Teacher {
         this.dob = dob;
         this.position = position;
         this.email = email;
-    }
-
-    public Teacher() {
     }
 
     public void removeGroup() {

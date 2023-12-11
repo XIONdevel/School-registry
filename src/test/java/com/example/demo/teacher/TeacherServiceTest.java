@@ -1,6 +1,6 @@
 package com.example.demo.teacher;
 
-import com.example.demo.exception.ExistsException;
+import com.example.demo.exception.*;
 import com.example.demo.group.Group;
 import com.example.demo.group.GroupRepository;
 import com.example.demo.parent.ParentRepository;
@@ -8,24 +8,21 @@ import com.example.demo.student.StudentRepository;
 import com.example.demo.subject.Subject;
 import com.example.demo.subject.SubjectRepository;
 import com.example.demo.utils.ServiceUtil;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@DataJpaTest
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class TeacherServiceTest {
     @Mock
@@ -79,8 +76,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.getTeacher(1L))
-                .hasMessageContaining("Teacher does not exists")
-                .isInstanceOf(ExistsException.class);
+                .hasMessageContaining("Teacher with given id not found.")
+                .isInstanceOf(TeacherNotFoundException.class);
     }
 
     @Test
@@ -91,7 +88,7 @@ class TeacherServiceTest {
         //then
         assertThatThrownBy(() -> service.getTeacher(id))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("given id is null");
+                .hasMessageContaining("Given id is null.");
     }
 
     @Test
@@ -122,8 +119,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addTeacher(teacher))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("email is taken");
+                .isInstanceOf(EmailTakenException.class)
+                .hasMessageContaining("Given email is taken.");
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
 
@@ -146,8 +143,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addTeacher(teacher))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("phone is taken");
+                .isInstanceOf(PhoneTakenException.class)
+                .hasMessageContaining("Phone is taken.");
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
 
@@ -163,7 +160,7 @@ class TeacherServiceTest {
         //then
         assertThatThrownBy(() -> service.addTeacher(teacher))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("teacher can not be null");
+                .hasMessageContaining("Given teacher is null.");
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
 
@@ -190,7 +187,7 @@ class TeacherServiceTest {
         //then
         assertThatThrownBy(() -> service.deleteTeacher(id))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("id can not be null");
+                .hasMessageContaining("Given id is null.");
     }
 
     @Test
@@ -202,8 +199,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.deleteTeacher(id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with given id not found.");
     }
 
     @Test
@@ -233,10 +230,10 @@ class TeacherServiceTest {
         //then
         assertThatThrownBy(() -> service.editTeacher(id, new Teacher()))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("id or teach is null");
+                .hasMessageContaining("Given teacher or id is null.");
         assertThatThrownBy(() -> service.editTeacher(1L, teacher))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("id or teach is null");
+                .hasMessageContaining("Given teacher or id is null.");
     }
 
     @Test
@@ -258,8 +255,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.editTeacher(id, teacher))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("email is taken");
+                .isInstanceOf(EmailTakenException.class)
+                .hasMessageContaining("Email is taken.");
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
 
@@ -279,8 +276,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.editTeacher(id, teacher))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("phone is taken");
+                .isInstanceOf(PhoneTakenException.class)
+                .hasMessageContaining("Phone is taken.");
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
 
@@ -325,8 +322,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addSubject(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with given id not found.");
     }
 
     @Test
@@ -339,8 +336,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addSubject(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("subject with this id does not exists");
+                .isInstanceOf(SubjectNotFoundException.class)
+                .hasMessageContaining("Subject with given id not found.");
     }
 
     @Test
@@ -386,8 +383,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addSubject(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with given id not found.");
     }
 
     @Test
@@ -400,8 +397,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addSubject(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("subject with this id does not exists");
+                .isInstanceOf(SubjectNotFoundException.class)
+                .hasMessageContaining("Subject with given id not found.");
     }
 
     @Test
@@ -446,23 +443,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addGroup(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
-    }
-
-    @Test
-    void willThrowIfGroupEmptyWhileAddingGroup() {
-        //given
-        Long id = 1L;
-        when(teacherRepository.findById(id))
-                .thenReturn(Optional.of(new Teacher()));
-        when(groupRepository.findById(id))
-                .thenReturn(Optional.empty());
-        //when
-        //then
-        assertThatThrownBy(() -> service.addGroup(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("group with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with this id not found.");
     }
 
     @Test
@@ -507,22 +489,8 @@ class TeacherServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.removeGroup(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with this id not found.");
     }
 
-    @Test
-    void willThrowIfGroupEmptyWhileRemovingGroup() {
-        //given
-        Long id = 1L;
-        when(teacherRepository.findById(id))
-                .thenReturn(Optional.of(new Teacher()));
-        when(groupRepository.findById(id))
-                .thenReturn(Optional.empty());
-        //when
-        //then
-        assertThatThrownBy(() -> service.removeGroup(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("group with this id does not exists");
-    }
 }

@@ -2,6 +2,8 @@ package com.example.demo.group;
 
 
 import com.example.demo.exception.ExistsException;
+import com.example.demo.exception.GroupNotFoundException;
+import com.example.demo.exception.TeacherNotFoundException;
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.teacher.Teacher;
@@ -28,20 +30,22 @@ public class GroupService {
         this.groupRepository = groupRepository;
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
-        logger.info("Group service initialized");
+        logger.info("Group service initialized.");
     }
 
     public Group getGroup(Long id) {
         if (id == null) {
-            logger.warn("Given id null");
-            throw new NullPointerException("id can not be null");
+            logger.error("Given id is null. Termination of operation.");
+            throw new NullPointerException("Given id is null.");
         }
 
         Optional<Group> group = groupRepository.findById(id);
+
         if (group.isEmpty()) {
-            logger.warn("Group with given id does not exists");
-            throw new ExistsException("group with this id does not exists");
+            logger.error("Group with given id not found. Termination of operation.");
+            throw new GroupNotFoundException("Group with given id not found.");
         }
+
         return group.get();
     }
 
@@ -51,43 +55,43 @@ public class GroupService {
 
     public void addNewGroup(Group group) {
         if (group == null) {
-            logger.warn("Given group is null");
-            throw new NullPointerException("group can not be null");
+            logger.error("Given group is null. Termination of operation.");
+            throw new NullPointerException("Group can not be null.");
         }
 
         String name = group.getName();
 
         if (name == null || name.isEmpty() || name.isBlank()) {
-            logger.warn("Group name is empty");
-            throw new NullPointerException("group name can not be empty");
+            logger.error("Group name is empty. Termination of operation.");
+            throw new NullPointerException("Group name can not be empty.");
         }
 
         if (groupRepository.existsByName(group.getName())) {
-            logger.warn("Group name already taken");
-            throw new ExistsException("group name is taken");
+            logger.error("Given group name is taken. Termination of operation.");
+            throw new GroupNotFoundException("Given group name is taken.");
         }
 
         groupRepository.save(group);
-        logger.info("Group successfully saved");
+        logger.info("Group successfully saved.");
     }
 
     public void removeTeacher(Long groupId, Long teacherId) {
         if (groupId == null || teacherId == null) {
-            logger.warn("Group id or teacher id is null");
-            throw new NullPointerException("group & teacher ids can not be null");
+            logger.error("Given group or teacher id is null. Termination of operation.");
+            throw new NullPointerException("Given group or teacher id is null.");
         }
 
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
         Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
 
         if (optionalTeacher.isEmpty()) {
-            logger.warn("Teacher with given id does not exists");
-            throw new ExistsException("teacher with this id does not exists");
+            logger.error("Teacher with given id not found. Termination of operation.");
+            throw new TeacherNotFoundException("Teacher with this id not found.");
         }
 
         if (optionalGroup.isEmpty()) {
-            logger.warn("Group with given id does not exists");
-            throw new ExistsException("group with this id does not exists");
+            logger.error("Group with given id not found. Termination of operation.");
+            throw new GroupNotFoundException("Group with given id not found.");
         }
 
         Teacher teacher = optionalTeacher.get();
@@ -95,28 +99,30 @@ public class GroupService {
 
         group.removeTeacher();
         teacher.removeGroup();
+
         groupRepository.save(group);
-        logger.info("Group successfully saved");
+        logger.info("Group successfully saved.");
         teacherRepository.save(teacher);
-        logger.info("Teacher successfully saved");
+        logger.info("Teacher successfully saved.");
     }
 
     public void addTeacher(Long groupId, Long teacherId) {
         if (groupId == null || teacherId == null) {
-            throw new NullPointerException("group & teacher ids can not equals null");
+            logger.error("Given group or teacher id is null. Termination of operation.");
+            throw new NullPointerException("Given group or teacher id is null.");
         }
 
         Optional<Group> optionalGroup = groupRepository.findById(groupId);
         Optional<Teacher> optionalTeacher = teacherRepository.findById(teacherId);
 
         if (optionalTeacher.isEmpty()) {
-            logger.warn("Teacher with given id does not exists");
-            throw new ExistsException("teacher with this id does not exists");
+            logger.error("Teacher with given id not found. Termination of operation.");
+            throw new TeacherNotFoundException("Teacher with this id not found.");
         }
 
         if (optionalGroup.isEmpty()) {
-            logger.warn("Group with given id does not exists");
-            throw new ExistsException("group with this id does not exists");
+            logger.error("Group with given id not found. Termination of operation.");
+            throw new GroupNotFoundException("Group with given id not found.");
         }
 
         Teacher teacher = optionalTeacher.get();
@@ -131,44 +137,80 @@ public class GroupService {
         logger.info("Teacher successfully saved");
     }
 
-    public void deleteGroup(Long id) {
-        if (id == null) {
-            logger.warn("Given id is null");
-            throw new NullPointerException("id can not be null");
+    public void deleteGroup(Long groupId) {
+        if (groupId == null) {
+            logger.error("Given group id is null. Termination of operation.");
+            throw new NullPointerException("Given group id is null.");
         }
 
-        if (groupRepository.existsById(id)) {
-            groupRepository.deleteById(id);
-            logger.info("Group successfully deleted");
-        } else {
-            logger.info("Group with given id does not exists");
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+
+        if (optionalGroup.isEmpty()) {
+            logger.error("Group with given id not found. Termination of operation.");
+            throw new GroupNotFoundException("Group with given id not found.");
         }
+
+        Teacher teacher = optionalGroup.get().getTeacherLead();
+
+        if (teacher != null) {
+            teacher.removeGroup();
+            teacherRepository.save(teacher);
+        }
+
+        groupRepository.deleteById(groupId);
+        logger.info("Group successfully deleted.");
     }
 
     public void editGroup(Long id, Group group) {
         if (group == null || id == null) {
-            logger.warn("Group or id is null");
-            throw new NullPointerException("id or group is null");
+            logger.error("Group or id is null. Termination of operation.");
+            throw new NullPointerException("Id or group is null.");
         }
 
         if (!groupRepository.existsById(id)) {
-            logger.warn("Group with given id does not exists");
-            throw new ExistsException("group with this id does not exists");
+            logger.error("Group with given id not found. Termination of operation.");
+            throw new GroupNotFoundException("Group with this id not found.");
         }
 
-        if (groupRepository
-                .existsGroupByNameAndIdNot(group.getName(), group.getId())) {
-            logger.warn("Name is taken");
-            throw new ExistsException("this name is taken");
+        if (groupRepository.existsGroupByNameAndIdNot(group.getName(), group.getId())) {
+            logger.error("Name is taken. Termination of operation.");
+            throw new ExistsException("Name is taken.");
         }
 
         group.setId(id);
 
         groupRepository.save(group);
-        logger.warn("Group successfully saved");
+        logger.info("Group successfully saved.");
     }
 
     public List<Student> getAllStudents(Long groupId) {
-        return studentRepository.findAllFromGroup(groupId);
+        if (groupId == null) {
+            logger.error("Given group id is null. Termination of operation.");
+            throw new NullPointerException("Given group id is null.");
+        }
+
+        Optional<Group> optionalGroup = groupRepository.findById(groupId);
+
+        if (optionalGroup.isEmpty()) {
+            logger.error("Group with given id not found. Termination of operation.");
+            throw new GroupNotFoundException("Group with given id not found.");
+        }
+
+        return studentRepository.findAllByGroup(optionalGroup.get());
+    }
+
+    public Group getByName(String name) {
+        if (name == null) {
+            logger.error("Given name is null. Termination of operation.");
+            throw new NullPointerException("Given name is null");
+        }
+
+        Optional<Group> optionalGroup =  groupRepository.findByName(name);
+
+        if (optionalGroup.isEmpty()) {
+            logger.error("Group with given id not found. Termination of operation.");
+            throw new GroupNotFoundException("Group with given id not found.");
+        }
+        return optionalGroup.get();
     }
 }

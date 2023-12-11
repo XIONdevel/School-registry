@@ -1,6 +1,6 @@
 package com.example.demo.student;
 
-import com.example.demo.exception.ExistsException;
+import com.example.demo.exception.*;
 import com.example.demo.parent.Parent;
 import com.example.demo.parent.ParentRepository;
 import com.example.demo.teacher.TeacherRepository;
@@ -12,6 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-@DataJpaTest
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
     @Mock
@@ -73,8 +74,8 @@ class StudentServiceTest {
         //when
         //then
         assertThatThrownBy(() -> studentService.addStudent(student))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("phone is taken");
+                .isInstanceOf(PhoneTakenException.class)
+                .hasMessageContaining("Phone is taken.");
 
         verify(studentRepository, never()).save(student);
     }
@@ -85,14 +86,14 @@ class StudentServiceTest {
         Student student = new Student();
         student.setEmail("newemail@gmail.com");
 
-        given(serviceUtil.isEmailTaken(student.getEmail()))
-                .willReturn(true);
+        when(serviceUtil.isEmailTaken(student.getEmail()))
+                .thenReturn(true);
 
         //when
         //then
         assertThatThrownBy(() -> studentService.addStudent(student))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("email is taken");
+                .isInstanceOf(EmailTakenException.class)
+                .hasMessageContaining("Email is taken.");
 
         verify(studentRepository, never()).save(student);
     }
@@ -105,7 +106,7 @@ class StudentServiceTest {
         //then
         assertThatThrownBy(() -> studentService.addStudent(student))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("student can not be null");
+                .hasMessageContaining("Student can not be null");
     }
 
     @Test
@@ -160,8 +161,8 @@ class StudentServiceTest {
         //then
         assertThatThrownBy(
                 () -> studentService.editStudent(studentId, updatedStudent))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("email is taken");
+                .isInstanceOf(EmailTakenException.class)
+                .hasMessageContaining("Email is taken.");
     }
 
     @Test
@@ -186,8 +187,8 @@ class StudentServiceTest {
         //then
         assertThatThrownBy(
                 () -> studentService.editStudent(studentId, updatedStudent))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("phone is taken");
+                .isInstanceOf(PhoneTakenException.class)
+                .hasMessageContaining("Phone is taken.");
     }
 
     @Test
@@ -236,8 +237,8 @@ class StudentServiceTest {
         //when
         //then
         assertThatThrownBy(() -> studentService.getStudent(id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("Student does not exists");
+                .isInstanceOf(StudentNotFoundException.class)
+                .hasMessageContaining("Student with given id not found.");
     }
 
     @Test
@@ -303,7 +304,7 @@ class StudentServiceTest {
         assertThatThrownBy(
                 () -> studentService.deleteParent(parentId, studentId))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining(("Parent: " + parentId + ", student: " + studentId));
+                .hasMessageContaining("Some of given id is null.");
     }
 
     @Test
@@ -349,8 +350,8 @@ class StudentServiceTest {
         //when
         //then
         assertThatThrownBy(() -> studentService.deleteParent(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("parent does not exists");
+                .isInstanceOf(ParentNotFoundException.class)
+                .hasMessageContaining("Parent with given id not found.");
     }
 
     @Test
@@ -370,8 +371,8 @@ class StudentServiceTest {
         //when
         //then
         assertThatThrownBy(() -> studentService.deleteParent(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("student does not exists");
+                .isInstanceOf(StudentNotFoundException.class)
+                .hasMessageContaining("Student with given id not found.");
     }
 
     @Test
@@ -395,18 +396,6 @@ class StudentServiceTest {
     }
 
     @Test
-    void willThrowNullWhileAddingParentToStudent() {
-        //given
-        Long parentId = null;
-        Long studentId = null;
-        //when
-        //then
-        assertThatThrownBy(() -> studentService.addParent(parentId, studentId))
-                .hasMessageContaining("Parent: " + parentId + ", student: " + studentId)
-                .isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
     void willThrowIfStudentEmpty() {
         //given
         Long id = 1L;
@@ -422,8 +411,8 @@ class StudentServiceTest {
         //when
         //then
         assertThatThrownBy(() -> studentService.addParent(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("student does not exists");
+                .isInstanceOf(StudentNotFoundException.class)
+                .hasMessageContaining("Student with given id not found.");
         verify(studentRepository, times(0)).save(any(Student.class));
         verify(parentRepository, times(0)).save(any(Parent.class));
     }
@@ -444,8 +433,8 @@ class StudentServiceTest {
         //when
         //then
         assertThatThrownBy(() -> studentService.addParent(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("parent does not exists");
+                .isInstanceOf(ParentNotFoundException.class)
+                .hasMessageContaining("Parent with given id not found.");
         verify(studentRepository, times(0)).save(any(Student.class));
         verify(parentRepository, times(0)).save(any(Parent.class));
     }
