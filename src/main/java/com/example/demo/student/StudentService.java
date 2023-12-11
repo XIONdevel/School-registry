@@ -42,8 +42,8 @@ public class StudentService {
     public Student getStudent(Long id) {
         Optional<Student> student = studentRepository.findById(id);
         if (student.isEmpty()) {
-            logger.error("Student with given id does not exists. Termination of operation");
-            throw new StudentNotFoundException("Student does not exists");
+            logger.error("Student with given id not found. Termination of operation");
+            throw new StudentNotFoundException("Student with given id not found.");
         }
         return student.get();
     }
@@ -51,17 +51,17 @@ public class StudentService {
     public void addStudent(Student student) {
         if (student == null) {
             logger.error("Attempted to add a null student. Termination of operation.");
-            throw new NullPointerException("Student can not be null");
+            throw new NullPointerException("Student can not be null.");
         }
 
         if (serviceUtil.isPhoneTaken(student.getPhone())) {
-            logger.error("Attempted to add a taken phone. Termination of operation.");
-            throw new PhoneTakenException("Phone is taken");
+            logger.error("Phone is taken. Termination of operation.");
+            throw new PhoneTakenException("Phone is taken.");
         }
 
         if (serviceUtil.isEmailTaken(student.getEmail())) {
-            logger.error("Attempted to add a taken email. Termination of operation.");
-            throw new ExistsException("email is taken");
+            logger.error("Email is taken. Termination of operation.");
+            throw new EmailTakenException("Email is taken.");
         }
 
         studentRepository.save(student);
@@ -85,13 +85,13 @@ public class StudentService {
         student = optionalStudent.get();
 
         if (isPhoneTaken(updatedStudent.getPhone(), id)) {
-            logger.error("Attempted edit student with taken phone. Termination of operation.");
-            throw new ExistsException("phone is taken");
+            logger.error("Phone is taken. Termination of operation.");
+            throw new PhoneTakenException("Phone is taken.");
         }
 
         if (isEmailTaken(updatedStudent.getEmail(), id)) {
-            logger.error("Attempted edit student with taken email. Termination of operation.");
-            throw new EmailTakenException("Email is taken");
+            logger.error("Email taken. Termination of operation.");
+            throw new EmailTakenException("Email is taken.");
         }
 
         student.setName(updatedStudent.getName());
@@ -128,8 +128,8 @@ public class StudentService {
 
     public void deleteParent(Long parentId, Long studentId) {
         if (parentId == null || studentId == null) {
-            logger.error("Attempting delete parent from student with null id. Termination of operation.");
-            throw new NullPointerException("Parent id: " + parentId + ", student id: " + studentId);
+            logger.error("Some of given id is null. Termination of operation.");
+            throw new NullPointerException("Some of given id is null.");
         }
 
         Optional<Parent> pr = parentRepository.findById(parentId);
@@ -138,14 +138,14 @@ public class StudentService {
         Parent parent;
 
         if (pr.isEmpty()) {
-            logger.error("Parent by given id does not exists. Termination of operation.");
-            throw new ExistsException("Parent does not exists.");
+            logger.error("Parent by given id not found. Termination of operation.");
+            throw new ParentNotFoundException("Parent with given id not found.");
         }
 
 
         if (st.isEmpty()) {
-            logger.error("Student by given id does not exists. Termination of operation.");
-            throw new StudentNotFoundException("Student does not found.");
+            logger.error("Student by given id not found. Termination of operation.");
+            throw new StudentNotFoundException("Student with given id not found.");
         }
 
         parent = pr.get();
@@ -158,13 +158,12 @@ public class StudentService {
         logger.info("Student saved, id:{}", studentId);
         parentRepository.save(parent);
         logger.info("Parent saved, id:{}", parentId);
-        logger.info("Parent with id:" + parentId + "removed from student, id:" + studentId);
     }
 
     public void addParent(Long parentId, Long studentId) {
         if (parentId == null || studentId == null) {
-            logger.error("Some of values is null while adding parent. Termination of operation.");
-            throw new NullPointerException("Parent id: " + parentId + ", student id: " + studentId);
+            logger.error("Some of given id is null. Termination of operation.");
+            throw new NullPointerException("Some of given id is null.");
         }
 
         Optional<Parent> pr = parentRepository.findById(parentId);
@@ -175,7 +174,7 @@ public class StudentService {
 
         if (pr.isEmpty()) {
             logger.error("Parent with given id not found. Termination of operation.");
-            throw new StudentNotFoundException("Parent with given id not found.");
+            throw new ParentNotFoundException("Parent with given id not found.");
         }
 
         if (st.isEmpty()) {
@@ -214,7 +213,7 @@ public class StudentService {
     public Student findByEmail(String email) {
         if (email == null) {
             logger.error("Given email is null. Termination of operation.");
-            throw new NullPointerException("Email can not be null.");
+            throw new NullPointerException("Given email is null.");
         }
 
         Optional<Student> optionalStudent = studentRepository.findStudentByEmail(email);

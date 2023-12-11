@@ -104,7 +104,7 @@ public class SubjectService {
         }
 
         subjectRepository.save(subject);
-        logger.info("Subject successfully saved".);
+        logger.info("Subject successfully saved.");
     }
 
     public void addTeacher(Long teacherId, Long subjectId) {

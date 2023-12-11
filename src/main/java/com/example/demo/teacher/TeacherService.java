@@ -74,7 +74,7 @@ public class TeacherService {
 
         if (serviceUtil.isPhoneTaken(teacher.getPhone())) {
             logger.error("Given phone is taken. Termination of operation.");
-            throw new PhoneTakenException("phone is taken");
+            throw new PhoneTakenException("Phone is taken.");
         }
 
         teacherRepository.save(teacher);
@@ -114,12 +114,12 @@ public class TeacherService {
 
         if (isPhoneTaken(teacher.getPhone(), id)) {
             logger.error("Given phone is taken. Termination of operation.");
-            throw new PhoneTakenException("phone is taken");
+            throw new PhoneTakenException("Phone is taken.");
         }
 
         if (isEmailTaken(teacher.getEmail(), id)) {
             logger.error("Given email is taken. Termination of operation.");
-            throw new ExistsException("Given email is taken.");
+            throw new EmailTakenException("Email is taken.");
         }
 
         teacher.setId(id);
@@ -235,7 +235,7 @@ public class TeacherService {
 
         if (optionalGroup.isEmpty()) {
             logger.error("Group with given id not found. Termination of operation.");
-            throw new GroupNotFoundException("Group with given id not found.");
+            throw new GroupNotFoundException("Group wi th given id not found.");
         }
 
         Teacher teacher = optionalTeacher.get();

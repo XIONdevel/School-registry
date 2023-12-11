@@ -1,6 +1,9 @@
 package com.example.demo.subject;
 
 import com.example.demo.exception.ExistsException;
+import com.example.demo.exception.NameTakenException;
+import com.example.demo.exception.SubjectNotFoundException;
+import com.example.demo.exception.TeacherNotFoundException;
 import com.example.demo.student.Student;
 import com.example.demo.teacher.Teacher;
 import com.example.demo.teacher.TeacherRepository;
@@ -12,6 +15,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
@@ -20,7 +24,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@DataJpaTest
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class SubjectServiceTest {
     @Mock
@@ -71,8 +75,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.getSubject(1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("Subject does not exists");
+                .isInstanceOf(SubjectNotFoundException.class)
+                .hasMessageContaining("Subject with given id not found.");
     }
 
     @Test
@@ -93,7 +97,7 @@ class SubjectServiceTest {
         //then
         assertThatThrownBy(() -> service.addSubject(subject))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("subject:" + subject);
+                .hasMessageContaining("Subject is null.");
     }
 
     @Test
@@ -107,8 +111,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addSubject(subject))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("name is taken");
+                .isInstanceOf(NameTakenException.class)
+                .hasMessageContaining("Name is taken.");
     }
 
     @Test
@@ -135,7 +139,7 @@ class SubjectServiceTest {
         //then
         assertThatThrownBy(() -> service.deleteSubject(id))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("id can not be null");
+                .hasMessageContaining("Given id is null.");
         verify(subjectRepository, times(0)).deleteById(anyLong());
     }
 
@@ -153,8 +157,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.deleteSubject(id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("subject with this id does not exists");
+                .isInstanceOf(SubjectNotFoundException.class)
+                .hasMessageContaining("Subject with given id not found.");
         verify(subjectRepository, times(0)).deleteById(anyLong());
     }
 
@@ -205,7 +209,7 @@ class SubjectServiceTest {
         //then
         assertThatThrownBy(() -> service.editSubject(id, subject))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("Subject or id is null. id:" + id);
+                .hasMessageContaining("Subject or id is null.");
     }
 
     @Test
@@ -217,7 +221,7 @@ class SubjectServiceTest {
         //then
         assertThatThrownBy(() -> service.editSubject(id, subject))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("Subject or id is null. id:" + id);
+                .hasMessageContaining("Subject or id is null.");
         verify(subjectRepository, times(0)).save(subject);
     }
 
@@ -234,8 +238,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.editSubject(id, subject))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("name is taken");
+                .isInstanceOf(NameTakenException.class)
+                .hasMessageContaining("Name is taken.");
         verify(subjectRepository, times(0)).save(subject);
     }
 
@@ -296,8 +300,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addTeacher(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with this id not found.");
         verify(subjectRepository, times(0)).save(any(Subject.class));
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
@@ -319,8 +323,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addTeacher(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("subject with this id does not exists");
+                .isInstanceOf(SubjectNotFoundException.class)
+                .hasMessageContaining("Subject with given id not found.");
         verify(subjectRepository, times(0)).save(any(Subject.class));
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
@@ -384,8 +388,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.removeTeacher(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with this id not found.");
         verify(subjectRepository, times(0)).save(any(Subject.class));
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
@@ -407,8 +411,8 @@ class SubjectServiceTest {
         //when
         //then
         assertThatThrownBy(() -> service.addTeacher(id, id))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("subject with this id does not exists");
+                .isInstanceOf(SubjectNotFoundException.class)
+                .hasMessageContaining("Subject with given id not found.");
         verify(subjectRepository, times(0)).save(any(Subject.class));
         verify(teacherRepository, times(0)).save(any(Teacher.class));
     }

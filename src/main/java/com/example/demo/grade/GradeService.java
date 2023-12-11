@@ -27,10 +27,10 @@ public class GradeService {
 
     private final String launchDate = "01/01/2023";
     public static final Logger logger = LoggerFactory.getLogger(GradeService.class);
-    private final GradeRepository gradeRepository;
-    private final StudentRepository studentRepository;
-    private final SubjectRepository subjectRepository;
-    private final TeacherRepository teacherRepository;
+    private GradeRepository gradeRepository;
+    private StudentRepository studentRepository;
+    private SubjectRepository subjectRepository;
+    private TeacherRepository teacherRepository;
 
     @Autowired
     public GradeService(GradeRepository gradeRepository,
@@ -41,6 +41,9 @@ public class GradeService {
         this.studentRepository = studentRepository;
         this.subjectRepository = subjectRepository;
         this.teacherRepository = teacherRepository;
+    }
+
+    public GradeService() {
     }
 
 

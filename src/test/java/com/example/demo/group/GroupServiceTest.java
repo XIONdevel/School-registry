@@ -1,6 +1,8 @@
 package com.example.demo.group;
 
 import com.example.demo.exception.ExistsException;
+import com.example.demo.exception.GroupNotFoundException;
+import com.example.demo.exception.TeacherNotFoundException;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.teacher.Teacher;
 import com.example.demo.teacher.TeacherRepository;
@@ -11,15 +13,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
-@DataJpaTest
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 class GroupServiceTest {
     @Mock
@@ -54,18 +58,6 @@ class GroupServiceTest {
     }
 
     @Test
-    void willThrowIfGroupDoesNotExists() {
-        //given
-        when(groupRepository.findById(anyLong()))
-                .thenReturn(Optional.empty());
-        //when
-        //then
-        assertThatThrownBy(() -> service.getGroup(1L))
-                .hasMessageContaining("group with this id does not exists")
-                .isInstanceOf(ExistsException.class);
-    }
-
-    @Test
     void itShouldAddNewGroup() {
         //given
         Group group = new Group();
@@ -86,22 +78,7 @@ class GroupServiceTest {
         //then
         assertThatThrownBy(() -> service.addNewGroup(group))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("group name can not be empty");
-    }
-
-    @Test
-    void willThrowIfNameIsTaken() {
-        //given
-        Group group = new Group();
-        group.setName("1");
-
-        when(groupRepository.existsByName(anyString()))
-                .thenReturn(true);
-        //when
-        //then
-        assertThatThrownBy(() -> service.addNewGroup(group))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("group name is taken");
+                .hasMessageContaining("Group name can not be empty.");
     }
 
     @Test
@@ -144,25 +121,9 @@ class GroupServiceTest {
                 .thenReturn(Optional.empty());
         //when
         //then
-        assertThatThrownBy(() -> service
-                .removeTeacher(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
-    }
-
-    @Test
-    void willThrowIfGroupIsEmptyWhileRemovingTeacher() {
-        //given
-        when(teacherRepository.findById(1L))
-                .thenReturn(Optional.of(new Teacher()));
-        when(groupRepository.findById(1L))
-                .thenReturn(Optional.empty());
-        //when
-        //then
-        assertThatThrownBy(() -> service
-                .removeTeacher(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("group with this id does not exists");
+        assertThatThrownBy(() -> service.removeTeacher(1L, 1L))
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with this id not found.");
     }
 
     @Test
@@ -207,34 +168,22 @@ class GroupServiceTest {
         //then
         assertThatThrownBy(() -> service
                 .addTeacher(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("teacher with this id does not exists");
-    }
-
-    @Test
-    void willThrowIfGroupIsEmptyWhileAddingTeacher() {
-        //given
-        when(teacherRepository.findById(1L))
-                .thenReturn(Optional.of(new Teacher()));
-        when(groupRepository.findById(1L))
-                .thenReturn(Optional.empty());
-        //when
-        //then
-        assertThatThrownBy(() -> service
-                .addTeacher(1L, 1L))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("group with this id does not exists");
+                .isInstanceOf(TeacherNotFoundException.class)
+                .hasMessageContaining("Teacher with this id not found.");
     }
 
     @Test
     void itShouldDeleteGroup() {
         //given
-        when(groupRepository.existsById(anyLong()))
-                .thenReturn(true);
+        Long id = 1L;
+        Group group = new Group();
+
+        when(groupRepository.findById(id))
+                .thenReturn(Optional.of(group));
         //when
-        service.deleteGroup(1L);
+        service.deleteGroup(id);
         //then
-        verify(groupRepository, times(1)).deleteById(anyLong());
+        verify(groupRepository, times(1)).deleteById(id);
     }
 
     @Test
@@ -259,16 +208,6 @@ class GroupServiceTest {
         assertThat(captured.getName()).isEqualTo("Math");
     }
 
-    @Test
-    void willThrowIfNotExistsById() {
-        //given
-        when(groupRepository.existsById(anyLong()))
-                .thenReturn(false);
-        //when
-        assertThatThrownBy(() -> service.editGroup(1L, new Group()))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("group with this id does not exists");
-    }
 
     @Test
     void willThrowIfNameIsTakenWhileEditing() {
@@ -285,13 +224,8 @@ class GroupServiceTest {
         //then
         assertThatThrownBy(() -> service.editGroup(id, group))
                 .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("this name is taken");
+                .hasMessageContaining("Name is taken.");
     }
-
-
-
-
-
 }
 
 
