@@ -17,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Table(name = "_user")
 public class User implements UserDetails {
     @Id
     @GeneratedValue
