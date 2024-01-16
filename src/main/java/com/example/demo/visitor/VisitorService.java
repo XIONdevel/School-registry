@@ -2,7 +2,7 @@ package com.example.demo.visitor;
 
 import com.example.demo.exception.PhoneTakenException;
 import com.example.demo.exception.VisitorNotFoundException;
-import com.example.demo.user.Role;
+import com.example.demo.user.permission.Role;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +50,6 @@ public class VisitorService {
         if (repository.existsByPhone(visitor.getPhone())) {
             logger.error("Phone is taken. Termination of operation.");
             throw new PhoneTakenException("Phone is taken.");
-        }
-
-        if (visitor.getRole() == null) {
-            visitor.setRole(Role.VISITOR);
         }
 
         visitor.setId(null);

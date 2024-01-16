@@ -7,6 +7,9 @@ import com.example.demo.parent.ParentRepository;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.subject.Subject;
 import com.example.demo.subject.SubjectRepository;
+import com.example.demo.user.permission.Role;
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +27,7 @@ public class TeacherService {
     private final ParentRepository parentRepository;
     private final SubjectRepository subjectRepository;
     private final GroupRepository groupRepository;
+    private final UserRepository userRepository;
     private final ServiceUtil serviceUtil;
 
     @Autowired
@@ -32,12 +36,13 @@ public class TeacherService {
                           ParentRepository parentRepository,
                           SubjectRepository subjectRepository,
                           GroupRepository groupRepository,
-                          ServiceUtil serviceUtil) {
+                          UserRepository userRepository, ServiceUtil serviceUtil) {
         this.teacherRepository = teacherRepository;
         this.studentRepository = studentRepository;
         this.parentRepository = parentRepository;
         this.subjectRepository = subjectRepository;
         this.groupRepository = groupRepository;
+        this.userRepository = userRepository;
         this.serviceUtil = serviceUtil;
         logger.info("Teacher service initialized");
     }
@@ -61,10 +66,27 @@ public class TeacherService {
         return teacher.get();
     }
 
-    public void addTeacher(Teacher teacher) {
+    public void createTeacher(Teacher teacher, Long userId) {
         if (teacher == null) {
             logger.error("Given teacher is null. Termination of operation.");
             throw new NullPointerException("Given teacher is null.");
+        }
+
+        if (serviceUtil.existsById(userId)) {
+            logger.error("User data with given id already exists. Termination of operation.");
+            throw new ExistsException("User data with given id already exists.");
+        }
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            logger.error("User with given id not found. Termination of operation.");
+            throw new UserNotFoundException("User with given id not found.");
+        }
+
+        User user = optionalUser.get();
+        if (!user.getRole().equals(Role.TEACHER)) {
+            logger.error("You don`t have permission to create teacher data. Termination of operation.");
+            throw new InvalidRoleException("You don`t have permission to create teacher data.");
         }
 
         if (serviceUtil.isEmailTaken(teacher.getEmail())) {
@@ -90,16 +112,13 @@ public class TeacherService {
         Teacher teacher;
         Optional<Teacher> teacherOptional = teacherRepository.findById(id);
 
-        if (teacherOptional.isEmpty()) {
-            logger.error("Teacher with given id not found. Termination of operation.");
-            throw new TeacherNotFoundException("Teacher with given id not found.");
-        }
+        if (teacherOptional.isPresent()) {
+            teacher = teacherOptional.get();
 
-        teacher = teacherOptional.get();
-
-        for (Subject s : teacher.getSubjects()) {
-            s.removeTeacher(teacher);
-            subjectRepository.save(s);
+            for (Subject s : teacher.getSubjects()) {
+                s.removeTeacher(teacher);
+                subjectRepository.save(s);
+            }
         }
 
         teacherRepository.deleteById(id);
@@ -211,7 +230,7 @@ public class TeacherService {
         Group group = optionalGroup.get();
 
         group.addTeacherLead(teacher);
-        teacher.addGroup(group);
+        teacher.setMainGroup(group);
 
         groupRepository.save(group);
         logger.info("Group saved successfully.");

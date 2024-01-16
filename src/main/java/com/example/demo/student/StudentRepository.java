@@ -1,6 +1,8 @@
 package com.example.demo.student;
 
 import com.example.demo.group.Group;
+import com.example.demo.teacher.Teacher;
+import com.example.demo.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends JpaRepository<Student, Long> {
+
+    Optional<Student> findByUser(User user);
 
     boolean existsByPhone(String phone);
 

@@ -5,6 +5,9 @@ public class ExistsException extends RuntimeException {
         super(message);
     }
 
+    public ExistsException() {
+    }
+
     public ExistsException(String message, Throwable cause) {
         super(message, cause);
     }

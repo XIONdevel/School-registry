@@ -129,7 +129,7 @@ public class GroupService {
         Group group = optionalGroup.get();
 
         group.addTeacherLead(teacher);
-        teacher.addGroup(group);
+        teacher.setMainGroup(group);
 
         groupRepository.save(group);
         logger.info("Group successfully saved");

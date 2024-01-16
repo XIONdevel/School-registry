@@ -88,7 +88,7 @@ class GroupServiceTest {
         Teacher teacher = new Teacher();
         Group group = new Group();
         group.addTeacherLead(teacher);
-        teacher.addGroup(group);
+        teacher.setMainGroup(group);
 
         when(groupRepository.findById(id))
                 .thenReturn(Optional.of(group));
@@ -110,7 +110,7 @@ class GroupServiceTest {
         Teacher capturedTeacher = teacherArgumentCaptor.getValue();
         Group capturedGroup = groupArgumentCaptor.getValue();
 
-        assertThat(capturedTeacher.getGroup()).isNull();
+        assertThat(capturedTeacher.getMainGroup()).isNull();
         assertThat(capturedGroup.getTeacherLead()).isNull();
     }
 
@@ -153,7 +153,7 @@ class GroupServiceTest {
         Teacher capturedTeacher = teacherArgumentCaptor.getValue();
         Group capturedGroup = groupArgumentCaptor.getValue();
 
-        assertThat(capturedTeacher.getGroup())
+        assertThat(capturedTeacher.getMainGroup())
                 .isEqualTo(capturedGroup);
         assertThat(capturedGroup.getTeacherLead())
                 .isEqualTo(capturedTeacher);

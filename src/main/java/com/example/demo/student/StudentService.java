@@ -4,6 +4,9 @@ import com.example.demo.exception.*;
 import com.example.demo.parent.Parent;
 import com.example.demo.parent.ParentRepository;
 import com.example.demo.teacher.TeacherRepository;
+import com.example.demo.user.permission.Role;
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +23,18 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final ParentRepository parentRepository;
     private final TeacherRepository teacherRepository;
+    private final UserRepository userRepository;
     private final ServiceUtil serviceUtil;
 
     @Autowired
     public StudentService(StudentRepository studentRepository,
                           ParentRepository parentRepository,
                           TeacherRepository teacherRepository,
-                          ServiceUtil serviceUtil) {
+                          UserRepository userRepository, ServiceUtil serviceUtil) {
         this.studentRepository = studentRepository;
         this.parentRepository = parentRepository;
         this.teacherRepository = teacherRepository;
+        this.userRepository = userRepository;
         this.serviceUtil = serviceUtil;
         logger.info("Student service initialization finished");
     }
@@ -48,10 +53,30 @@ public class StudentService {
         return student.get();
     }
 
-    public void addStudent(Student student) {
+    public void createStudent(Student student, Long userId) {
         if (student == null) {
-            logger.error("Attempted to add a null student. Termination of operation.");
-            throw new NullPointerException("Student can not be null.");
+            logger.error("Given student is null. Termination of operation.");
+            throw new NullPointerException("Given student is null.");
+        } else if (userId == null) {
+            logger.error("Given user id is null. Termination of operation.");
+            throw new NullPointerException("Given user id is null.");
+        }
+
+        if (serviceUtil.existsById(userId)) {
+            logger.error("User data with given id already exists. Termination of operation.");
+            throw new ExistsException("User data with given id already exists.");
+        }
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            logger.error("User with given id not found. Termination of operation.");
+            throw new UserNotFoundException("User with given id not found.");
+        }
+
+        User user = optionalUser.get();
+        if (!user.getRole().equals(Role.STUDENT)) {
+            logger.error("You don`t have permission to create student data. Termination of operation.");
+            throw new InvalidRoleException("You don`t have permission to create student data.");
         }
 
         if (serviceUtil.isPhoneTaken(student.getPhone())) {
@@ -112,17 +137,12 @@ public class StudentService {
         Optional<Student> student = studentRepository.findById(id);
         if (student.isPresent()) {
             Set<Parent> parents = student.get().getParents();
-
             for (Parent p : parents) {
                 p.removeChild(student.get());
                 parentRepository.save(p);
             }
-
             studentRepository.deleteById(id);
             logger.info("Student successfully deleted");
-        } else {
-            logger.error("Student with given id does not exists. Termination of operation.");
-            throw new StudentNotFoundException("Student with given id does not exists.");
         }
     }
 
@@ -185,7 +205,7 @@ public class StudentService {
         parent = pr.get();
         student = st.get();
 
-        student.addParents(parent);
+        student.addParent(parent);
         parent.addChild(student);
 
         studentRepository.save(student);

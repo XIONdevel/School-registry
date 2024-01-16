@@ -36,9 +36,10 @@ public class ParentController {
         service.editParent(id, parent);
     }
 
-    @PostMapping("/new")
-    public void addParent(@RequestBody Parent parent) {
-        service.addParent(parent);
+    @PostMapping("/{userId}/new")
+    public void createParent(@RequestBody Parent parent,
+                             @PathVariable Long userId) {
+        service.createParent(parent, userId);
     }
 
     @PutMapping("/{parentId}/child/add/{studentId}")
@@ -49,7 +50,7 @@ public class ParentController {
 
     @PutMapping("/{parentId}/child/remove/{studentId}")
     public void removeChild(@PathVariable Long parentId,
-                         @PathVariable Long studentId) {
+                            @PathVariable Long studentId) {
         service.removeChild(studentId, parentId);
     }
 

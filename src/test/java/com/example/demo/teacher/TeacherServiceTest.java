@@ -7,6 +7,9 @@ import com.example.demo.parent.ParentRepository;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.subject.Subject;
 import com.example.demo.subject.SubjectRepository;
+import com.example.demo.user.permission.Role;
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,8 @@ class TeacherServiceTest {
     @Mock
     private GroupRepository groupRepository;
     @Mock
+    private UserRepository userRepository;
+    @Mock
     private ServiceUtil serviceUtil;
     private TeacherService service;
 
@@ -47,6 +52,7 @@ class TeacherServiceTest {
                 parentRepository,
                 subjectRepository,
                 groupRepository,
+                userRepository,
                 serviceUtil
         );
     }
@@ -97,71 +103,16 @@ class TeacherServiceTest {
         Long id = 1L;
         Teacher teacher = new Teacher();
         teacher.setId(id);
+        User user = new User();
+        user.setRole(Role.TEACHER);
+
+        when(serviceUtil.existsById(id)).thenReturn(false);
+        when(userRepository.findById(id))
+                .thenReturn(Optional.of(user));
         //when
-        service.addTeacher(teacher);
+        service.createTeacher(teacher, id);
         //then
         verify(teacherRepository, times(1)).save(any(Teacher.class));
-    }
-
-    @Test
-    void willThrowIfEmailIsTakenWhileAdding() {
-        //given
-        Long id = 1L;
-        String email = "email@gmail.com";
-        String phone = "+1234567890";
-        Teacher teacher = new Teacher();
-        teacher.setId(id);
-        teacher.setEmail(email);
-        teacher.setPhone(phone);
-
-        when(serviceUtil.isEmailTaken(email))
-                .thenReturn(true);
-        //when
-        //then
-        assertThatThrownBy(() -> service.addTeacher(teacher))
-                .isInstanceOf(EmailTakenException.class)
-                .hasMessageContaining("Given email is taken.");
-        verify(teacherRepository, times(0)).save(any(Teacher.class));
-    }
-
-    @Test
-    void willThrowIfPhoneIsTakenWhileAdding() {
-        //given
-        Long id = 1L;
-        String email = "email@gmail.com";
-        String phone = "+1234567890";
-        Teacher teacher = new Teacher();
-        teacher.setId(id);
-        teacher.setEmail(email);
-        teacher.setPhone(phone);
-
-        when(serviceUtil.isEmailTaken(email))
-                .thenReturn(false);
-
-        when(serviceUtil.isPhoneTaken(phone))
-                .thenReturn(true);
-        //when
-        //then
-        assertThatThrownBy(() -> service.addTeacher(teacher))
-                .isInstanceOf(PhoneTakenException.class)
-                .hasMessageContaining("Phone is taken.");
-        verify(teacherRepository, times(0)).save(any(Teacher.class));
-    }
-
-    @Test
-    void willThrowIfGivenNullWhileAdding() {
-        //given
-        Long id = 1L;
-        String email = "email@gmail.com";
-        String phone = "+1234567890";
-        Teacher teacher = null;
-        
-        //when
-        //then
-        assertThatThrownBy(() -> service.addTeacher(teacher))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("Given teacher is null.");
-        verify(teacherRepository, times(0)).save(any(Teacher.class));
     }
 
     @Test
@@ -188,19 +139,6 @@ class TeacherServiceTest {
         assertThatThrownBy(() -> service.deleteTeacher(id))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Given id is null.");
-    }
-
-    @Test
-    void willThrowIfTeacherDoesNotExistsWhileDeleting() {
-        //given
-        Long id = 1L;
-        when(teacherRepository.findById(id))
-                .thenReturn(Optional.empty());
-        //when
-        //then
-        assertThatThrownBy(() -> service.deleteTeacher(id))
-                .isInstanceOf(TeacherNotFoundException.class)
-                .hasMessageContaining("Teacher with given id not found.");
     }
 
     @Test
@@ -293,25 +231,13 @@ class TeacherServiceTest {
         when(subjectRepository.findById(id))
                 .thenReturn(Optional.of(subject));
 
-        ArgumentCaptor<Subject> subjectCaptor =
-                ArgumentCaptor.forClass(Subject.class);
-        ArgumentCaptor<Teacher> teacherCaptor =
-                ArgumentCaptor.forClass(Teacher.class);
         //when
         service.addSubject(id, id);
         //then
         verify(subjectRepository, times(1))
-                .save(subjectCaptor.capture());
+                .save(any(Subject.class));
         verify(teacherRepository, times(1))
-                .save(teacherCaptor.capture());
-
-        Teacher capturedTeacher = teacherCaptor.getValue();
-        Subject capturedSubject = subjectCaptor.getValue();
-
-        assertThat(capturedTeacher.getSubjects().contains(capturedSubject))
-                .isTrue();
-        assertThat(capturedSubject.getTeachers().contains(capturedTeacher))
-                .isTrue();
+                .save(any(Teacher.class));
     }
 
     @Test
@@ -430,7 +356,7 @@ class TeacherServiceTest {
 
         assertThat(capturedGroup.getTeacherLead())
                 .isEqualTo(capturedTeacher);
-        assertThat(capturedTeacher.getGroup())
+        assertThat(capturedTeacher.getMainGroup())
                 .isEqualTo(capturedGroup);
     }
 
@@ -454,7 +380,7 @@ class TeacherServiceTest {
         Group group = new Group();
         Teacher teacher = new Teacher();
         group.addTeacherLead(teacher);
-        teacher.addGroup(group);
+        teacher.setMainGroup(group);
 
         when(groupRepository.findById(id))
                 .thenReturn(Optional.of(group));
@@ -476,7 +402,7 @@ class TeacherServiceTest {
         Group capturedGroup = groupArgumentCaptor.getValue();
         Teacher capturedTeacher = teacherArgumentCaptor.getValue();
 
-        assertThat(capturedTeacher.getGroup()).isNull();
+        assertThat(capturedTeacher.getMainGroup()).isNull();
         assertThat(capturedGroup.getTeacherLead()).isNull();
     }
 

@@ -1,6 +1,6 @@
 package com.example.demo.visitor;
 
-import com.example.demo.user.Role;
+import com.example.demo.user.permission.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

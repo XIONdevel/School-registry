@@ -37,9 +37,10 @@ public class StudentController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<Void> addStudent(Student student) {
-        service.addStudent(student);
+    @PostMapping("/{userId}/add")
+    public ResponseEntity<Void> createStudent(@RequestBody Student student,
+                                              @PathVariable Long userId) {
+        service.createStudent(student, userId);
         return ResponseEntity.noContent().build();
     }
 

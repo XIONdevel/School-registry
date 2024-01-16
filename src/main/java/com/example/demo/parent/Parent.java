@@ -1,108 +1,40 @@
 package com.example.demo.parent;
 
 import com.example.demo.student.Student;
+import com.example.demo.user.User;
+import com.example.demo.user.UserInterface;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
+@Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "parent")
-public class Parent{
+public class Parent implements UserInterface {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
-
-    @Column(length = 50)
     private String name;
-
-    @Column(length = 50)
     private String surname;
-
-    @Column(length = 50,
-            unique = true)
+    @Column(unique = true)
     private String phone;
-
-    @Column(length = 50,
-            unique = true)
+    @Column(unique = true)
     private String email;
+
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToMany(mappedBy = "parents")
     private Set<Student> children = new HashSet<>();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Set<Student> getChildren() {
-        return children;
-    }
-
     public void addChild(Student student) {
         children.add(student);
-    }
-
-
-    public Parent(Long id,
-                  String name,
-                  String surname,
-                  String phone,
-                  String email) {
-        this.id = id;
-        this.name = name;
-        this.surname = surname;
-        this.phone = phone;
-        this.email = email;
-    }
-
-    public Parent(String name,
-                  String surname,
-                  String phone,
-                  String email) {
-        this.name = name;
-        this.surname = surname;
-        this.phone = phone;
-        this.email = email;
-    }
-
-    public Parent() {
     }
 
     public void removeChild(Student student) {

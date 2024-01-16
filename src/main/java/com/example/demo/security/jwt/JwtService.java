@@ -1,13 +1,11 @@
 package com.example.demo.security.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.InvalidKeyException;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +13,8 @@ import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +24,11 @@ import org.springframework.stereotype.Service;
 public class JwtService {
 
     private final static Logger logger = LoggerFactory.getLogger(JwtService.class);
-    private static final String SECRET = "n+tZ+PZFpcPfwnpbbICPfSPaM/E/F/1gNpaLGL6Gazo=";
-    private final long expiration = 1000 * 60 * 60 * 24;
+
+    @Value("${jwt.secret}")
+    private static String SECRET;
+    @Value("${jwt.expiration}")
+    private long expiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -64,15 +67,11 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        boolean valid = (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
-        logger.info("Token validation: {}", valid);
-        return valid;
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
-        boolean b = extractExpiration(token).before(new Date());
-        logger.info("Expired: {}", b);
-        return b;
+        return extractExpiration(token).before(new Date());
     }
 
     private Date extractExpiration(String token) {
@@ -81,20 +80,20 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         logger.info("Token: {}", token);
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("Jwt is expired", e);
+        }
     }
 
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
-        Key key = Keys.hmacShaKeyFor(keyBytes);
-        logger.info("Length: {}", keyBytes.length);
-        logger.info("Alg: {}", key.getAlgorithm());
-        logger.info("Format: {}", key.getFormat());
-        return key;
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

@@ -27,9 +27,10 @@ public class TeacherController {
         return ResponseEntity.ok(teacher);
     }
 
-    @PostMapping("/add/new")
-    public ResponseEntity<Void> addTeacher(Teacher teacher) {
-        service.addTeacher(teacher);
+    @PostMapping("/{userId}/add")
+    public ResponseEntity<Void> addTeacher(@RequestBody Teacher teacher,
+                                           @PathVariable Long userId) {
+        service.createTeacher(teacher, userId);
         return ResponseEntity.noContent().build();
     }
 

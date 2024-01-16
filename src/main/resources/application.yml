@@ -36,10 +36,9 @@ logging:
 # custom properties
 
 # TODO: change key before using
-# HS256 HEX, length 256
 jwt:
-#  expiration: 86400000 # 1 day
-  secret: "76c0880975b8495d690bda98bf8be3caf40de5dbd903e90ebcd045102f770bf8"
+  expiration: 604,800,000 # 1 day
+  secret: "n+tZ+PZFpcPfwnpbbICPfSPaM/E/F/1gNpaLGL6Gazo=";
 
 
 
@@ -48,3 +47,9 @@ jwt:
 
 
 
+# 1. Form for creating Student/parent/staff must create user account, and then redirecting for creating entity
+#
+#
+#
+#
+#

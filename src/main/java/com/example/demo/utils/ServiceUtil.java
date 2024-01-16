@@ -69,5 +69,11 @@ public class ServiceUtil {
                 parentRepository.existsByEmail(email);
     }
 
+    public boolean existsById(Long id) {
+        return parentRepository.existsById(id) ||
+                teacherRepository.existsById(id) ||
+                studentRepository.existsById(id);
+    }
+
 
 }

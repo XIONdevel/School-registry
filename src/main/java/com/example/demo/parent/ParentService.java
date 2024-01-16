@@ -1,9 +1,15 @@
 package com.example.demo.parent;
 
 import com.example.demo.exception.ExistsException;
+import com.example.demo.exception.InvalidRoleException;
+import com.example.demo.exception.ParentNotFoundException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.teacher.TeacherRepository;
+import com.example.demo.user.permission.Role;
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,42 +25,69 @@ public class ParentService {
     private final ParentRepository parentRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final UserRepository userRepository;
     private final ServiceUtil serviceUtil;
 
     @Autowired
     public ParentService(ParentRepository parentRepository,
                          StudentRepository studentRepository,
                          TeacherRepository teacherRepository,
-                         ServiceUtil serviceUtil) {
+                         UserRepository userRepository, ServiceUtil serviceUtil) {
         this.parentRepository = parentRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
+        this.userRepository = userRepository;
         this.serviceUtil = serviceUtil;
         logger.info("Parent service initialized");
     }
 
     public Parent getParent(Long id) {
-        Optional<Parent> parent = parentRepository.findById(id);
-        if (parent.isPresent()) {
-            return parent.get();
-        } else {
-            throw new ExistsException("Parent do not exists exception");
+        if (id == null) {
+            logger.error("Given id is null. Termination of operation.");
+            throw new NullPointerException("Given id is null.");
         }
+
+        Optional<Parent> parent = parentRepository.findById(id);
+
+        if (parent.isEmpty()) {
+            logger.error("Parent with given id not found. Termination of operation.");
+            throw new ParentNotFoundException("Parent do not exists exception");
+        }
+        return parent.get();
+
     }
 
     public List<Parent> getAll() {
         return parentRepository.findAll();
     }
 
-    public void addParent(Parent parent) {
+    public void createParent(Parent parent, Long userId) {
         if (parent == null) {
-            logger.warn("Given parent is null");
-            throw new NullPointerException("parent can not be null");
+            logger.error("Given parent is null. Termination of operation.");
+            throw new NullPointerException("Given parent is null.");
+        } else if (userId == null) {
+            logger.error("Given user id is null. Termination of operation.");
+            throw new NullPointerException("Given user id is null. Termination of operation.");
+        }
+
+        if (serviceUtil.existsById(userId)) {
+            logger.error("Attempt to create second role for user. Termination of operation.");
+            throw new ExistsException("Attempt to create second role for user.");
+        }
+
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isEmpty()) {
+            logger.error("User with given id not found. Termination of operation.");
+            throw new UserNotFoundException("User with given id not found.");
+        }
+        User user = optionalUser.get();
+        if (!user.getRole().equals(Role.PARENT)) {
+            logger.error("You don`t have permission to create parent data. Termination of operation.");
+            throw new InvalidRoleException("You don`t have permission to create parent data.");
         }
 
         String email = parent.getEmail();
         String phone = parent.getPhone();
-        parent.setId(null);
 
         if (serviceUtil.isEmailTaken(email)) {
             logger.warn("Email is taken");
@@ -75,11 +108,16 @@ public class ParentService {
             logger.warn("Given id is null");
             throw new NullPointerException("given id is null");
         }
-        if (parentRepository.existsById(id)) {
-            parentRepository.deleteById(id);
-        } else {
-            logger.warn("Parent with given id does not exist");
+
+        Optional<Parent> optionalParent = parentRepository.findById(id);
+        if (optionalParent.isPresent()) {
+            Parent parent = optionalParent.get();
+            for (Student s : parent.getChildren()) {
+                s.removeParent(parent);
+                studentRepository.save(s);
+            }
         }
+        parentRepository.deleteById(id);
     }
 
     public void editParent(Long id, Parent updatedParent) {
@@ -141,7 +179,7 @@ public class ParentService {
             logger.warn("This parent is already marked as a parent of this person");
         }
 
-        student.addParents(parent);
+        student.addParent(parent);
         parent.addChild(student);
 
         studentRepository.save(student);
@@ -152,7 +190,7 @@ public class ParentService {
 
     public void removeChild(Long studentId, Long parentId) {
         if (studentId == null ||
-            parentId == null) {
+                parentId == null) {
             logger.warn("Some of given ids is null");
             throw new NullPointerException("Some of given ids is null");
         }

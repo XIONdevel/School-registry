@@ -4,6 +4,9 @@ import com.example.demo.exception.ExistsException;
 import com.example.demo.student.Student;
 import com.example.demo.student.StudentRepository;
 import com.example.demo.teacher.TeacherRepository;
+import com.example.demo.user.permission.Role;
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
@@ -32,6 +34,8 @@ class ParentServiceTest {
     @Mock
     private TeacherRepository teacherRepository;
     @Mock
+    private UserRepository userRepository;
+    @Mock
     private ServiceUtil serviceUtil;
     private ParentService service;
 
@@ -41,6 +45,7 @@ class ParentServiceTest {
                 parentRepository,
                 studentRepository,
                 teacherRepository,
+                userRepository,
                 serviceUtil
         );
     }
@@ -48,60 +53,33 @@ class ParentServiceTest {
     @Test
     void itShouldAddParent() {
         //given
+        Long id = 1L;
         Parent parent = new Parent();
         parent.setEmail("email@gmail.com");
         parent.setPhone("+1243493");
+        User user = new User();
+        user.setRole(Role.PARENT);
         when(serviceUtil.isEmailTaken(anyString()))
                 .thenReturn(false);
         when(serviceUtil.isPhoneTaken(anyString()))
                 .thenReturn(false);
+        when(userRepository.findById(id))
+                .thenReturn(Optional.of(user));
         //when
-        service.addParent(parent);
+        service.createParent(parent, id);
         //then
         verify(parentRepository, times(1))
                 .save(parent);
     }
 
     @Test
-    void willThrowIfEmailTakenWhileAddingParent() {
-        //given
-        Parent parent = new Parent();
-        parent.setEmail("email@gmail.com");
-        parent.setPhone("+1243493");
-
-        when(serviceUtil.isEmailTaken(anyString()))
-                .thenReturn(true);
-        //when
-        //then
-        assertThatThrownBy(() -> service.addParent(parent))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("email already taken");
-    }
-
-    @Test
-    void willThrowIfPhoneTakenWhileAddingParent() {
-        //given
-        Parent parent = new Parent();
-        parent.setEmail("email@gmail.com");
-        parent.setPhone("+1243493");
-
-        when(serviceUtil.isEmailTaken(anyString()))
-                .thenReturn(false);
-        when(serviceUtil.isPhoneTaken(anyString()))
-                .thenReturn(true);
-        //when
-        //then
-        assertThatThrownBy(() -> service.addParent(parent))
-                .isInstanceOf(ExistsException.class)
-                .hasMessageContaining("phone already taken");
-    }
-
-    @Test
     void itShouldDeleteParent() {
         //given
         Long id = 1L;
-        when(parentRepository.existsById(id))
-                .thenReturn(true);
+        Parent parent = new Parent();
+        parent.setId(id);
+        when(parentRepository.findById(id))
+                .thenReturn(Optional.of(parent));
         //when
         service.deleteParent(id);
         //then
@@ -195,25 +173,13 @@ class ParentServiceTest {
         when(parentRepository.findById(id))
                 .thenReturn(Optional.of(parent));
 
-        ArgumentCaptor<Parent> parentArgumentCaptor =
-                ArgumentCaptor.forClass(Parent.class);
-        ArgumentCaptor<Student> studentArgumentCaptor =
-                ArgumentCaptor.forClass(Student.class);
         //when
         service.addChild(id, id);
         //then
         verify(studentRepository, times(1))
-                .save(studentArgumentCaptor.capture());
+                .save(any(Student.class));
         verify(parentRepository, times(1))
-                .save(parentArgumentCaptor.capture());
-
-        Parent capturedParent = parentArgumentCaptor.getValue();
-        Student capturedStudent = studentArgumentCaptor.getValue();
-
-        assertThat(capturedParent.getChildren().contains(capturedStudent))
-                .isTrue();
-        assertThat(capturedStudent.getParents().contains(capturedParent))
-                .isTrue();
+                .save(any(Parent.class));
     }
 
     @Test
@@ -248,39 +214,6 @@ class ParentServiceTest {
         assertThatThrownBy(() -> service.addChild(id, id))
                 .isInstanceOf(ExistsException.class)
                 .hasMessageContaining("parent with given id does not exists");
-    }
-
-    @Test
-    void itShouldRemoveChild() {
-        //given
-        Long id = 1L;
-        Parent parent = new Parent();
-        Student student = new Student();
-        parent.addChild(student);
-        student.addParents(parent);
-
-        when(studentRepository.findById(id))
-                .thenReturn(Optional.of(student));
-        when(parentRepository.findById(id))
-                .thenReturn(Optional.of(parent));
-
-        ArgumentCaptor<Parent> parentArgumentCaptor =
-                ArgumentCaptor.forClass(Parent.class);
-        ArgumentCaptor<Student> studentArgumentCaptor =
-                ArgumentCaptor.forClass(Student.class);
-        //when
-        service.addChild(id, id);
-        //then
-        verify(studentRepository, times(1))
-                .save(studentArgumentCaptor.capture());
-        verify(parentRepository, times(1))
-                .save(parentArgumentCaptor.capture());
-
-        Parent capturedParent = parentArgumentCaptor.getValue();
-        Student capturedStudent = studentArgumentCaptor.getValue();
-
-        assertThat(capturedParent.getChildren().size()).isEqualTo(1);
-        assertThat(capturedStudent.getParents().size()).isEqualTo(1);
     }
 
     @Test

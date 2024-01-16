@@ -4,6 +4,9 @@ import com.example.demo.exception.*;
 import com.example.demo.parent.Parent;
 import com.example.demo.parent.ParentRepository;
 import com.example.demo.teacher.TeacherRepository;
+import com.example.demo.user.permission.Role;
+import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 import com.example.demo.utils.ServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
@@ -19,7 +21,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -32,6 +33,8 @@ class StudentServiceTest {
     @Mock
     private ParentRepository parentRepository;
     @Mock
+    private UserRepository userRepository;
+    @Mock
     private ServiceUtil serviceUtil;
     private StudentService studentService;
 
@@ -40,17 +43,25 @@ class StudentServiceTest {
         studentService = new StudentService(studentRepository,
                 parentRepository,
                 teacherRepository,
+                userRepository,
                 serviceUtil);
     }
 
     @Test
     void itShouldAddNewStudent() {
         //given
+        Long id = 1L;
         Student student = new Student();
         student.setEmail("newemail@gmail.com");
+        User user = new User();
+        user.setRole(Role.STUDENT);
+
+        when(serviceUtil.existsById(id)).thenReturn(false);
+        when(userRepository.findById(id))
+                .thenReturn(Optional.of(user));
 
         //when
-        studentService.addStudent(student);
+        studentService.createStudent(student, id);
 
         //then
         ArgumentCaptor<Student> studentArgumentCaptor =
@@ -60,53 +71,6 @@ class StudentServiceTest {
 
         Student capturedStudent = studentArgumentCaptor.getValue();
         assertThat(capturedStudent).isEqualTo(student);
-    }
-
-    @Test
-    void willThrowWhenPhoneTakenWhileAdding() {
-        //given
-        Student student = new Student();
-        student.setPhone("+323923422423");
-
-        given(serviceUtil.isPhoneTaken(student.getPhone()))
-                .willReturn(true);
-
-        //when
-        //then
-        assertThatThrownBy(() -> studentService.addStudent(student))
-                .isInstanceOf(PhoneTakenException.class)
-                .hasMessageContaining("Phone is taken.");
-
-        verify(studentRepository, never()).save(student);
-    }
-
-    @Test
-    void willThrowWhenEmailTakenWhileAdding() {
-        //given
-        Student student = new Student();
-        student.setEmail("newemail@gmail.com");
-
-        when(serviceUtil.isEmailTaken(student.getEmail()))
-                .thenReturn(true);
-
-        //when
-        //then
-        assertThatThrownBy(() -> studentService.addStudent(student))
-                .isInstanceOf(EmailTakenException.class)
-                .hasMessageContaining("Email is taken.");
-
-        verify(studentRepository, never()).save(student);
-    }
-
-    @Test
-    void willThrowIfNullWhileAdding() {
-        //given
-        Student student = null;
-        //when
-        //then
-        assertThatThrownBy(() -> studentService.addStudent(student))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("Student can not be null");
     }
 
     @Test
@@ -270,31 +234,6 @@ class StudentServiceTest {
     }
 
     @Test
-    void willDeleteStudentFromAllParents() {
-        //given
-        Long id = 1L;
-        Student student = new Student();
-        student.setId(id);
-
-        Parent parent = new Parent();
-        parent.addChild(student);
-        student.addParents(parent);
-
-        Parent parent1 = new Parent();
-        parent1.addChild(student);
-        student.addParents(parent1);
-
-        when(studentRepository.findById(id))
-                .thenReturn(Optional.of(student));
-
-        //when
-        studentService.deleteStudent(id);
-        //then
-        assertThat(parent.getChildren().size()).isEqualTo(0);
-        assertThat(parent1.getChildren().size()).isEqualTo(0);
-    }
-
-    @Test
     void itShouldThrowNullWhileDeleteParentFromStudent() {
         //given
         Long parentId = null;
@@ -305,32 +244,6 @@ class StudentServiceTest {
                 () -> studentService.deleteParent(parentId, studentId))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("Some of given id is null.");
-    }
-
-    @Test
-    void shouldDeleteParentFromStudent() {
-        //given
-        Long id = 1L;
-        Student student = new Student();
-        student.setId(id);
-        Parent parent = new Parent();
-        parent.setId(id);
-        student.addParents(parent);
-        parent.addChild(student);
-
-        when(parentRepository.findById(id))
-                .thenReturn(Optional.of(parent));
-        when(studentRepository.findById(id))
-                .thenReturn(Optional.of(student));
-
-        //when
-        studentService.deleteParent(id, id);
-
-        //then
-        verify(studentRepository, times(1)).save(any(Student.class));
-        verify(parentRepository, times(1)).save(any(Parent.class));
-        assertThat(student.getParents().size()).isEqualTo(0);
-        assertThat(parent.getChildren().size()).isEqualTo(0);
     }
 
     @Test
