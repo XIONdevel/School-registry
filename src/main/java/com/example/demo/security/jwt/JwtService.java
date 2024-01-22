@@ -1,11 +1,14 @@
 package com.example.demo.security.jwt;
 
+import com.example.demo.security.token.Token;
+import com.example.demo.security.token.TokenRepository;
+import com.example.demo.security.token.TokenService;
+import com.example.demo.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.InvalidKeyException;
 import io.jsonwebtoken.security.Keys;
+
 import java.security.Key;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,22 +16,32 @@ import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
-
 
 @Service
 public class JwtService {
 
     private final static Logger logger = LoggerFactory.getLogger(JwtService.class);
-
-    @Value("${jwt.secret}")
-    private static String SECRET;
-    @Value("${jwt.expiration}")
+    @Value("${application.security.jwt.secret}")
+    private String secretKey;
+    @Value("${application.security.jwt.expiration}")
     private long expiration;
+    @Value("${application.security.jwt.refresh.expiration}")
+    private long refreshExpiration;
+    private final TokenService tokenService;
+    private final TokenRepository tokenRepository;
+
+    @Autowired
+    public JwtService(
+            TokenService tokenService,
+            TokenRepository tokenRepository
+    ) {
+        this.tokenService = tokenService;
+        this.tokenRepository = tokenRepository;
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -70,6 +83,13 @@ public class JwtService {
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
+    public boolean isRefreshTokenValid(String refreshToken, UserDetails userDetails) {
+        final String username = extractUsername(refreshToken);
+        return (username.equals(userDetails.getUsername())) &&
+                !isTokenExpired(refreshToken) &&
+                tokenRepository.existsByToken(refreshToken);
+    }
+
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -93,7 +113,15 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    public Token generateRefreshToken(User user) {
+        Token token = Token.builder()
+                .token(buildToken(new HashMap<>(), user, refreshExpiration))
+                .user(user)
+                .build();
+        return tokenService.save(token);
     }
 }

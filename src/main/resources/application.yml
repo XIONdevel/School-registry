@@ -36,9 +36,13 @@ logging:
 # custom properties
 
 # TODO: change key before using
-jwt:
-  expiration: 604,800,000 # 1 day
-  secret: "n+tZ+PZFpcPfwnpbbICPfSPaM/E/F/1gNpaLGL6Gazo=";
+application:
+  security:
+    jwt:
+      secret: n+tZ+PZFpcPfwnpbbICPfSPaM/E/F/1gNpaLGL6Gazo=
+      expiration: 604800000 # 1 day
+      refresh:
+        expiration: 100000000 #TODO: change
 
 
 
