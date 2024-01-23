@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Date;
+
 @Entity
 @Data
 @Builder
@@ -22,6 +24,8 @@ public class Token {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType = TokenType.BEARER;
 
     public boolean isEmpty() {
         return this.token == null ||

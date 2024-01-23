@@ -1,6 +1,6 @@
-package com.example.demo.security.auth;
+package com.example.demo.security.auth.request;
 
-
+import com.example.demo.user.permission.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class RegisterRequest {
 
     private String email;
     private String password;
-
+    private Role role;
 
 }

@@ -1,4 +1,5 @@
-package com.example.demo.security.auth;
+package com.example.demo.security.auth.request;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefreshRequest {
+public class AuthenticationRequest {
 
-    private String refreshToken;
+    private String email;
+    private String password;
+
 
 }

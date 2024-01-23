@@ -1,6 +1,11 @@
 package com.example.demo.security.auth;
 
-import com.example.demo.security.token.Token;
+import com.example.demo.security.auth.request.AuthenticationRequest;
+import com.example.demo.security.auth.request.LogoutRequest;
+import com.example.demo.security.auth.request.RefreshRequest;
+import com.example.demo.security.auth.request.RegisterRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +39,15 @@ public class AuthenticationController {
             @RequestBody RefreshRequest request
     ) {
         return ResponseEntity.ok(service.refreshToken(request));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(
+            @RequestBody LogoutRequest request,
+            HttpServletResponse response
+    ) {
+        service.logout(request, response);
+        return ResponseEntity.ok("Successfully logged out");
     }
 
 
