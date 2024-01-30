@@ -26,10 +26,11 @@ server:
 logging:
   level:
     root: INFO
-    com.example.demo: TRACE
+    com.example.school: TRACE
   logback:
     rollingpolicy:
       max-file-size: 50MB
+      max-history: 1
   file:
     name: registryLog.log
 

@@ -1,0 +1,127 @@
+package com.example.school.security.auth;
+
+import com.example.school.exception.jwt.InvalidTokenException;
+import com.example.school.security.auth.request.AuthenticationRequest;
+import com.example.school.security.auth.request.LogoutRequest;
+import com.example.school.security.auth.request.RefreshRequest;
+import com.example.school.security.auth.request.RegisterRequest;
+import com.example.school.security.jwt.JwtService;
+import com.example.school.security.token.Token;
+import com.example.school.security.token.TokenRepository;
+import com.example.school.security.token.TokenService;
+import com.example.school.user.User;
+import com.example.school.user.UserDetailsServiceImpl;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class AuthenticationService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
+    @Value("${application.security.jwt.refresh.expiration}")
+    private long refreshExpiration;
+
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserDetailsServiceImpl userService;
+    private final AuthenticationManager authenticationManager;
+    private final TokenRepository tokenRepository;
+    private final TokenService tokenService;
+
+    public AuthenticationResponse authenticate(AuthenticationRequest request) throws AuthenticationException {
+        User user = userService.loadUserByUsername(request.getEmail());
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user).getToken();
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge((int) (refreshExpiration / 1000));
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .cookie(cookie)
+                .build();
+    }
+
+    public AuthenticationResponse register(RegisterRequest request) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole())
+                .isEnable(true)
+                .build();
+
+        User saved = userService.createUser(user);
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user).getToken();
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge((int) (refreshExpiration / 1000));
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .cookie(cookie)
+                .build();
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request) {
+        String refreshToken;
+        String username;
+
+        if (request.getRefreshToken() == null) {
+            logger.error("Refresh token from request is null. Termination of operation.");
+            throw new IllegalArgumentException("Refresh token from request is null.");
+        }
+
+        refreshToken = request.getRefreshToken();
+        username = jwtService.extractUsername(refreshToken);
+
+        if (username != null) {
+            User user = userService.loadUserByUsername(username);
+            if (jwtService.isRefreshTokenValid(refreshToken, user)) {
+                Cookie cookie = new Cookie("refreshToken", refreshToken);
+                cookie.setHttpOnly(true);
+                cookie.setMaxAge((int) (refreshExpiration / 1000));
+                return AuthenticationResponse.builder()
+                        .accessToken(jwtService.generateToken(user))
+                        .cookie(cookie)
+                        .build();
+            } else {
+                tokenService.revoke(user);
+                logger.warn("Refresh token is expired. Redirection to login page.");
+                throw new InvalidTokenException("Refresh token is expired.");
+            }
+        } else {
+            logger.error("Username is null. Termination of operation.");
+            throw new NullPointerException("Username is null.");
+        }
+    }
+
+    public void logout(LogoutRequest request, HttpServletResponse response) {
+        Token refresh = tokenRepository.findByToken(request.getRefreshToken());
+        User user = refresh.getUser();
+        if (jwtService.isRefreshTokenValid(refresh.getToken(), user)) {
+            tokenService.revoke(user);
+            Cookie cookie = new Cookie("refreshToken", "");
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        } else {
+            logger.warn("Refresh token is invalid.");
+            throw new InvalidTokenException("Refresh token is invalid.");
+        }
+    }
+}
