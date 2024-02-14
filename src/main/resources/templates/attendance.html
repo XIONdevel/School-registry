@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table from JSON</title>
+    <link rel="stylesheet" href="/style/attendance.css">
+    <script type="text/javascript" src="/script/attendance.js"></script>
+</head>
+<body>
+
+<!--TODO: add css-->
+<h2>Dynamic Table from JSON</h2>
+<div class="selector-container">
+
+    <div>
+        <label for="dateSelector">Date: </label>
+        <input type="date" id="dateSelector" min="2024-01-01">
+    </div>
+
+    <div>
+        <label for="groupSelector">Group: </label>
+        <select id="groupSelector"></select>
+    </div>
+
+    <button onclick="attendanceTable()">Create Table</button>
+</div>
+<div id="tableContainer"></div>
+
+</body>
+</html>
