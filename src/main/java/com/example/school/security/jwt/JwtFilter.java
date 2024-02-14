@@ -40,7 +40,6 @@ public class JwtFilter extends OncePerRequestFilter {
         String username;
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.info("Auth header null or do not start with bearer. Passing JwtFilter.");
             filterChain.doFilter(request, response);
             return;
         }

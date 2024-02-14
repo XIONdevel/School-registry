@@ -10,44 +10,51 @@ public enum Role {
     ADMIN(
             Set.of(
                     Permission.ADMIN,
-                    Permission.ATTENDANCE_WATCH
+                    Permission.ATTENDANCE_WATCH,
+                    Permission.USER
 
             )
     ),
     DIRECTOR(
             Set.of(
                     Permission.ADMIN,
-                    Permission.ATTENDANCE_WATCH
+                    Permission.ATTENDANCE_WATCH,
+                    Permission.USER
 
             )
     ),
     OFFICE(
             Set.of(
-                    Permission.ATTENDANCE_WATCH
+                    Permission.ATTENDANCE_WATCH,
+                    Permission.USER
 
             )
     ),
     TEACHER(
             Set.of(
-                    Permission.ATTENDANCE_WATCH
+                    Permission.ATTENDANCE_WATCH,
+                    Permission.USER
 
             )
     ),
     STAFF(
             Set.of(
-                    Permission.ATTENDANCE_WATCH
+                    Permission.ATTENDANCE_WATCH,
+                    Permission.USER
 
             )
     ),
     STUDENT(
             Set.of(
-                    Permission.ATTENDANCE_WATCH
+                    Permission.ATTENDANCE_WATCH,
+                    Permission.USER
 
             )
     ),
     PARENT(
             Set.of(
-                    Permission.ATTENDANCE_WATCH
+                    Permission.ATTENDANCE_WATCH,
+                    Permission.USER
             )
     );
 

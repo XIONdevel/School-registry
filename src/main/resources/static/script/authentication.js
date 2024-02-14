@@ -1,44 +1,19 @@
-//TODO: add error handling
-//TODO: add response handling
-function logout() {
-    localStorage.removeItem("accessToken");
-    sessionStorage.removeItem("accessToken");
-    fetch("/api/v1/auth/logout",
-        {
-            method: "POST",
-            credentials: "include"
-        }
-    );
-    window.location.href = "/";
+function validateEmail(email) {
+    const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return regex.test(String(email).toLowerCase());
 }
 
-function refresh() {
-    localStorage.removeItem("accessToken");
-    sessionStorage.removeItem("accessToken");
-    fetch("/api/v1/auth/refresh-token",
-        {
-            method: "POST",
-            credentials: "include"
-        }
-    );
-}
+async function authenticate() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const message = document.getElementById("message");
 
-function register(email, password, role) {
-    fetch("/api/v1/auth/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-                role: role
-            })
-    });
-}
+    if (!validateEmail(email)) {
+        message.innerText = "Email is not valid";
+        return;
+    }
 
-function authenticate(email, password) {
-    fetch("/api/v1/auth/authenticate", {
+    await fetch("/api/v1/auth/authenticate", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -47,5 +22,51 @@ function authenticate(email, password) {
             email: email,
             password: password
         })
-    });
+    }).then(response => {
+        if (!response.ok) {
+            message.innerText = "Error";
+        }
+        return response.json();
+    }).then(data => {
+        localStorage.setItem("accessToken", data.accessToken);
+        document.cookie = data.cookie;
+        return window.location.href = "";
+    })
+
 }
+
+//password button
+document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("password");
+    const toggleButton = document.getElementById("togglePassword");
+
+    toggleButton.addEventListener("click", function () {
+        passwordInput.type = (passwordInput.type === "password") ? "text" : "password";
+        toggleButton.textContent = (passwordInput.type === "password") ? "Show Password" : "Hide Password";
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

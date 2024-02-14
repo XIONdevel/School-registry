@@ -34,6 +34,8 @@ logging:
   file:
     name: registryLog.log
 
+
+
 # custom properties
 
 # TODO: change key before using
@@ -41,9 +43,9 @@ application:
   security:
     jwt:
       secret: n+tZ+PZFpcPfwnpbbICPfSPaM/E/F/1gNpaLGL6Gazo=
-      expiration: 604800000 # 1 day
+      expiration: 3600000 # 1 hour
       refresh:
-        expiration: 100000000 #TODO: change
+        expiration: 2419200000 # 28 days
 
 
 

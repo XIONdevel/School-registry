@@ -1,9 +1,8 @@
 package com.example.school.security.auth;
 
 import com.example.school.exception.jwt.InvalidTokenException;
+import com.example.school.exception.notfound.DataNotFoundException;
 import com.example.school.security.auth.request.AuthenticationRequest;
-import com.example.school.security.auth.request.LogoutRequest;
-import com.example.school.security.auth.request.RefreshRequest;
 import com.example.school.security.auth.request.RegisterRequest;
 import com.example.school.security.jwt.JwtService;
 import com.example.school.security.token.Token;
@@ -12,6 +11,7 @@ import com.example.school.security.token.TokenService;
 import com.example.school.user.User;
 import com.example.school.user.UserDetailsServiceImpl;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,9 +19,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -77,16 +81,12 @@ public class AuthenticationService {
                 .build();
     }
 
-    public AuthenticationResponse refreshToken(RefreshRequest request) {
-        String refreshToken;
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        logger.info("Started refresh token process");
+        Token refresh = extractRefreshToken(request);
+        String refreshToken = refresh.getToken();
         String username;
 
-        if (request.getRefreshToken() == null) {
-            logger.error("Refresh token from request is null. Termination of operation.");
-            throw new IllegalArgumentException("Refresh token from request is null.");
-        }
-
-        refreshToken = request.getRefreshToken();
         username = jwtService.extractUsername(refreshToken);
 
         if (username != null) {
@@ -95,23 +95,23 @@ public class AuthenticationService {
                 Cookie cookie = new Cookie("refreshToken", refreshToken);
                 cookie.setHttpOnly(true);
                 cookie.setMaxAge((int) (refreshExpiration / 1000));
-                return AuthenticationResponse.builder()
-                        .accessToken(jwtService.generateToken(user))
-                        .cookie(cookie)
-                        .build();
+                String accessToken = jwtService.generateToken(user);
+                response.addHeader("Authorization", "Bearer " + accessToken);
+                response.addCookie(cookie);
             } else {
                 tokenService.revoke(user);
                 logger.warn("Refresh token is expired. Redirection to login page.");
-                throw new InvalidTokenException("Refresh token is expired.");
+                response.addCookie(new Cookie("refreshToken", "empty"));
+                response.sendError(401, "Refresh token is expired.");
             }
         } else {
             logger.error("Username is null. Termination of operation.");
-            throw new NullPointerException("Username is null.");
+            response.sendError(417, "Username is null");
         }
     }
 
-    public void logout(LogoutRequest request, HttpServletResponse response) {
-        Token refresh = tokenRepository.findByToken(request.getRefreshToken());
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        Token refresh = extractRefreshToken(request);
         User user = refresh.getUser();
         if (jwtService.isRefreshTokenValid(refresh.getToken(), user)) {
             tokenService.revoke(user);
@@ -123,5 +123,22 @@ public class AuthenticationService {
             logger.warn("Refresh token is invalid.");
             throw new InvalidTokenException("Refresh token is invalid.");
         }
+    }
+
+    protected Token extractRefreshToken(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        for(Cookie c : cookies) {
+            if (c.getName().equals("refreshToken")) {
+                return tokenRepository.findByToken(c.getValue());
+            }
+        }
+        logger.warn("Missing refresh token cookie in request");
+        throw new DataNotFoundException("Missing refresh token cookie in request");
+    }
+
+    public Boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication != null && authentication.isAuthenticated();
+
     }
 }

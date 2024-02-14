@@ -57,8 +57,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<User> optionalUser = userRepository.findByEmail(username);
 
         if (optionalUser.isEmpty()) {
-            logger.error("User with given username not found. Termination of operation.");
-            throw new UserNotFoundException("User with given username not found.");
+            logger.error("User with given email not found. Termination of operation.");
+            throw new UserNotFoundException("User with given email not found.");
         }
 
         return optionalUser.get();

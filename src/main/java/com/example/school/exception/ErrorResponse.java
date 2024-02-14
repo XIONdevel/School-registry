@@ -1,4 +1,4 @@
-package com.example.school.security.auth.request;
+package com.example.school.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefreshRequest {
+public class ErrorResponse {
 
-    private String refreshToken;
+    private int status;
+    private String message;
 
 }

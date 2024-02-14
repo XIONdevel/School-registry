@@ -1,6 +1,5 @@
 package com.example.school.group;
 
-import com.example.school.dto.AttendanceGroupSelectorDTO;
 import com.example.school.user.UserInterface;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

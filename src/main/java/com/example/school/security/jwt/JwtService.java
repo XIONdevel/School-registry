@@ -99,17 +99,12 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        logger.info("Token: {}", token);
-        try {
-            return Jwts
-                    .parserBuilder()
-                    .setSigningKey(getSignInKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (ExpiredJwtException e) {
-            throw new JwtException("Jwt is expired", e);
-        }
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSignInKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     private Key getSignInKey() {
