@@ -14,9 +14,12 @@ spring:
     open-in-view: false
   thymeleaf:
     enabled: true
-    prefix: classpath:/templates/
+    prefix: file:///D:/demo/src/main/web/templates/
     suffix: .html
     mode: HTML
+  web:
+    resources:
+      static-locations: file:///D:/demo/src/main/web/static/
 
 server:
   error:
@@ -29,12 +32,10 @@ logging:
     com.example.school: TRACE
   logback:
     rollingpolicy:
-      max-file-size: 50MB
+      max-file-size: 20MB
       max-history: 1
   file:
     name: registryLog.log
-
-
 
 # custom properties
 
@@ -49,14 +50,3 @@ application:
 
 
 
-
-
-
-
-
-# 1. Form for creating Student/parent/staff must create user account, and then redirecting for creating entity
-#
-#
-#
-#
-#

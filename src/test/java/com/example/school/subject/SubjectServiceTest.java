@@ -1,10 +1,13 @@
 package com.example.school.subject;
 
+import com.example.school.entity.subject.Subject;
+import com.example.school.entity.subject.SubjectRepository;
+import com.example.school.entity.subject.SubjectService;
 import com.example.school.exception.NameTakenException;
 import com.example.school.exception.SubjectNotFoundException;
 import com.example.school.exception.TeacherNotFoundException;
-import com.example.school.teacher.Teacher;
-import com.example.school.teacher.TeacherRepository;
+import com.example.school.entity.teacher.Teacher;
+import com.example.school.entity.teacher.TeacherRepository;
 import com.example.school.utils.ServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

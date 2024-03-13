@@ -2,20 +2,20 @@ package com.example.school.attendence;
 
 import com.example.school.dto.AttendanceDTO;
 import com.example.school.exception.notfound.DataNotFoundException;
-import com.example.school.group.Group;
-import com.example.school.group.GroupRepository;
+import com.example.school.entity.group.Group;
+import com.example.school.entity.group.GroupRepository;
 import com.example.school.request.AttendanceRequest;
 import com.example.school.security.jwt.JwtService;
-import com.example.school.student.Student;
-import com.example.school.student.StudentRepository;
-import com.example.school.subject.Subject;
-import com.example.school.subject.SubjectRepository;
-import com.example.school.teacher.TeacherRepository;
-import com.example.school.user.User;
-import com.example.school.user.UserDetailsServiceImpl;
-import com.example.school.user.UserInterface;
-import com.example.school.user.permission.Permission;
-import com.example.school.user.permission.Role;
+import com.example.school.entity.student.Student;
+import com.example.school.entity.student.StudentRepository;
+import com.example.school.entity.subject.Subject;
+import com.example.school.entity.subject.SubjectRepository;
+import com.example.school.entity.teacher.TeacherRepository;
+import com.example.school.entity.user.User;
+import com.example.school.entity.user.UserDetailsServiceImpl;
+import com.example.school.entity.user.UserData;
+import com.example.school.entity.user.permission.Permission;
+import com.example.school.entity.user.permission.Role;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class AttendService {
         Set<Permission> permissions = user.getRole().getPermissions();
 
         if (permissions.contains(Permission.ATTENDANCE_WATCH)) {
-            UserInterface userData = userService.getUserData(user.getId());
+            UserData userData = userService.getUserData(user.getId());
             Role role = user.getRole();
 
             if (role.is(Role.TEACHER)) {

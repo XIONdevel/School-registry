@@ -1,11 +1,14 @@
 package com.example.school.grade;
 
-import com.example.school.student.Student;
-import com.example.school.student.StudentRepository;
-import com.example.school.subject.Subject;
-import com.example.school.subject.SubjectRepository;
-import com.example.school.teacher.Teacher;
-import com.example.school.teacher.TeacherRepository;
+import com.example.school.entity.grade.Grade;
+import com.example.school.entity.grade.GradeRepository;
+import com.example.school.entity.grade.GradeService;
+import com.example.school.entity.student.Student;
+import com.example.school.entity.student.StudentRepository;
+import com.example.school.entity.subject.Subject;
+import com.example.school.entity.subject.SubjectRepository;
+import com.example.school.entity.teacher.Teacher;
+import com.example.school.entity.teacher.TeacherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

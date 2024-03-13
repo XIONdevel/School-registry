@@ -1,9 +1,9 @@
 package com.example.school.security.auth;
 
 import com.example.school.security.auth.request.AuthenticationRequest;
-import com.example.school.security.auth.request.LogoutRequest;
 import com.example.school.security.auth.request.RegisterRequest;
-import com.example.school.user.permission.Role;
+import com.example.school.entity.user.permission.Role;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -21,29 +22,37 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(
-            @RequestBody RegisterRequest request
+    public ResponseEntity<Void> register(
+            @RequestBody RegisterRequest request,
+            HttpServletResponse response
     ) {
-        return ResponseEntity.ok(service.register(request));
+        service.register(request, response);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponse> authenticate(
-            @RequestBody AuthenticationRequest request
+    public ResponseEntity<Void> authenticate(
+            @RequestBody AuthenticationRequest request,
+            HttpServletResponse response
     ) {
-        return ResponseEntity.ok(service.authenticate(request));
+        service.authenticate(request, response);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/refresh-token")
-//    @PreAuthorize("hasAuthority('USER')")
     public void refreshToken(
-            @RequestBody HttpServletRequest request,
-            @RequestBody HttpServletResponse response
-    ) throws IOException {
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        System.out.println("Cookie cus: " + Arrays.toString(request.getCookies()));
+        for (Cookie c : request.getCookies()) {
+            String text = c.getName() + ": " + c.getValue();
+            System.out.println(text);
+        }
         service.refreshToken(request, response);
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<String> logout(
             HttpServletRequest request,
@@ -60,8 +69,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/loginCheck")
-    public ResponseEntity<Boolean> isLoggedIn() {
+    public ResponseEntity<Void> isLoggedIn() {
         System.out.println("accessed successfully");
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok().build();
     }
 }

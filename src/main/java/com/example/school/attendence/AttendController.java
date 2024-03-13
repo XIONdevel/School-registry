@@ -1,9 +1,9 @@
 package com.example.school.attendence;
 
 import com.example.school.dto.AttendanceDTO;
-import com.example.school.group.Group;
+import com.example.school.entity.group.Group;
 import com.example.school.request.AttendanceRequest;
-import com.example.school.subject.Subject;
+import com.example.school.entity.subject.Subject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

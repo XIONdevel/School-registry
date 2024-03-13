@@ -1,7 +1,7 @@
 package com.example.school.attendence;
 
 import com.example.school.dto.AttendanceDTO;
-import com.example.school.student.Student;
+import com.example.school.entity.student.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,7 +14,7 @@ public interface AttendRepository extends JpaRepository<Attend, Long> {
 
     @Query("""
     SELECT NEW com.example.school.dto.AttendanceDTO
-    (a.status, a.date, a.absentCause, stud.name, stud.surname, sub.name)
+    (a.status, a.date, a.absentCause, stud.firstname, stud.lastname, sub.name)
     FROM Attend a
     JOIN a.student stud
     JOIN a.subject sub

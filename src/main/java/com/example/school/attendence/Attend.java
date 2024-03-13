@@ -1,7 +1,7 @@
 package com.example.school.attendence;
 
-import com.example.school.student.Student;
-import com.example.school.subject.Subject;
+import com.example.school.entity.student.Student;
+import com.example.school.entity.subject.Subject;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

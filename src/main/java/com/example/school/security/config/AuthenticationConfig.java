@@ -1,7 +1,7 @@
 package com.example.school.security.config;
 
 
-import com.example.school.user.UserDetailsServiceImpl;
+import com.example.school.entity.user.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

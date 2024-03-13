@@ -1,6 +1,6 @@
 package com.example.school.security.token;
 
-import com.example.school.user.User;
+import com.example.school.entity.user.User;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

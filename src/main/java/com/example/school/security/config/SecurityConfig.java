@@ -2,7 +2,7 @@ package com.example.school.security.config;
 
 
 import com.example.school.security.jwt.JwtFilter;
-import com.example.school.user.permission.Permission;
+import com.example.school.entity.user.permission.Permission;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -40,16 +39,16 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/register",
                                 "/api/v1/auth/authenticate",
-                                "/api/v1/auth/login"
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/refresh-token"
                         ).permitAll()
-                        .requestMatchers("/api/v1/auth/loginCheck").hasAuthority(Permission.USER.name())
+                        .requestMatchers(
+                                "/api/v1/auth/loginCheck",
+                                "/api/v1/profile/**"
+                        ).hasAnyAuthority(Permission.USER.name())
                         .requestMatchers("/api/v1/main/**").permitAll()
                         .anyRequest().permitAll()
                 )
-//                .formLogin(formLogin -> formLogin       //TODO: add login page
-//                        .loginPage("/api/v1/auth/login")
-//                        .permitAll()
-//                )
                 .rememberMe(Customizer.withDefaults());
         return http.build();
     }
