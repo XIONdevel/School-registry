@@ -1,6 +1,8 @@
 package com.example.school.student;
 
-import com.example.school.group.Group;
+import com.example.school.entity.student.Student;
+import com.example.school.entity.student.StudentRepository;
+import com.example.school.entity.group.Group;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

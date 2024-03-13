@@ -3,7 +3,7 @@ package com.example.school.security.jwt;
 import com.example.school.security.token.Token;
 import com.example.school.security.token.TokenRepository;
 import com.example.school.security.token.TokenService;
-import com.example.school.user.User;
+import com.example.school.entity.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

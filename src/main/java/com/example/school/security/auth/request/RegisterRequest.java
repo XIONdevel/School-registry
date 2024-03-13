@@ -1,6 +1,6 @@
 package com.example.school.security.auth.request;
 
-import com.example.school.user.permission.Role;
+import com.example.school.entity.user.permission.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

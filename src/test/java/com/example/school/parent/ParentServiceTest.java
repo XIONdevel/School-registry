@@ -1,12 +1,15 @@
 package com.example.school.parent;
 
+import com.example.school.entity.parent.Parent;
+import com.example.school.entity.parent.ParentRepository;
+import com.example.school.entity.parent.ParentService;
 import com.example.school.exception.ExistsException;
-import com.example.school.student.Student;
-import com.example.school.student.StudentRepository;
-import com.example.school.teacher.TeacherRepository;
-import com.example.school.user.permission.Role;
-import com.example.school.user.User;
-import com.example.school.user.UserRepository;
+import com.example.school.entity.student.Student;
+import com.example.school.entity.student.StudentRepository;
+import com.example.school.entity.teacher.TeacherRepository;
+import com.example.school.entity.user.permission.Role;
+import com.example.school.entity.user.User;
+import com.example.school.entity.user.UserRepository;
 import com.example.school.utils.ServiceUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

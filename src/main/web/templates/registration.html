@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+    <script src="/script/responseHandler.js"></script>
+    <script src="/script/registration.js"></script>
+    <script src="/script/common/header.js"></script>
+    <link rel="stylesheet" href="/style/header.css">
+    <link rel="stylesheet" href="/style/registration.css">
+</head>
+<body>
+<div id="header"></div>
+<div id="content">
+    <div id="registerBlock">
+        <form id="registrationForm">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="button" id="togglePassword">Show Password</button>
+
+            <label for="roleSelect">Role: </label>
+            <select id="roleSelect"></select>
+            <br/>
+            <button id="regButton" type="button" onclick="register()">Register</button>
+        </form>
+        <div id="exception"></div>
+    </div>
+</div>
+
+</body>
+</html>

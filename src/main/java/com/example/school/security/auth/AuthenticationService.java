@@ -8,8 +8,8 @@ import com.example.school.security.jwt.JwtService;
 import com.example.school.security.token.Token;
 import com.example.school.security.token.TokenRepository;
 import com.example.school.security.token.TokenService;
-import com.example.school.user.User;
-import com.example.school.user.UserDetailsServiceImpl;
+import com.example.school.entity.user.User;
+import com.example.school.entity.user.UserDetailsServiceImpl;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,9 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +40,7 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     private final TokenService tokenService;
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request) throws AuthenticationException {
+    public void authenticate(AuthenticationRequest request, HttpServletResponse response) throws AuthenticationException {
         User user = userService.loadUserByUsername(request.getEmail());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -55,13 +53,12 @@ public class AuthenticationService {
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
         cookie.setMaxAge((int) (refreshExpiration / 1000));
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .cookie(cookie)
-                .build();
+
+        response.addCookie(cookie);
+        response.addHeader("Authorization", accessToken);
     }
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public void register(RegisterRequest request, HttpServletResponse response) {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -69,19 +66,18 @@ public class AuthenticationService {
                 .isEnable(true)
                 .build();
 
-        User saved = userService.createUser(user);
+        userService.createUser(user);
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user).getToken();
         Cookie cookie = new Cookie("refreshToken", refreshToken);
         cookie.setHttpOnly(true);
         cookie.setMaxAge((int) (refreshExpiration / 1000));
-        return AuthenticationResponse.builder()
-                .accessToken(accessToken)
-                .cookie(cookie)
-                .build();
+
+        response.addCookie(cookie);
+        response.addHeader("Authorization", accessToken);
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
         logger.info("Started refresh token process");
         Token refresh = extractRefreshToken(request);
         String refreshToken = refresh.getToken();
@@ -96,17 +92,22 @@ public class AuthenticationService {
                 cookie.setHttpOnly(true);
                 cookie.setMaxAge((int) (refreshExpiration / 1000));
                 String accessToken = jwtService.generateToken(user);
-                response.addHeader("Authorization", "Bearer " + accessToken);
+                response.addHeader("Authorization", accessToken);
                 response.addCookie(cookie);
             } else {
                 tokenService.revoke(user);
                 logger.warn("Refresh token is expired. Redirection to login page.");
                 response.addCookie(new Cookie("refreshToken", "empty"));
-                response.sendError(401, "Refresh token is expired.");
+                response.setStatus(401);
             }
         } else {
             logger.error("Username is null. Termination of operation.");
-            response.sendError(417, "Username is null");
+            try {
+                response.sendError(417, "Username is null");
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -119,6 +120,9 @@ public class AuthenticationService {
             cookie.setHttpOnly(true);
             cookie.setMaxAge(0);
             response.addCookie(cookie);
+            try {
+                response.sendRedirect("/api/v1/main/");
+            } catch (IOException ignore) {}
         } else {
             logger.warn("Refresh token is invalid.");
             throw new InvalidTokenException("Refresh token is invalid.");
@@ -136,9 +140,4 @@ public class AuthenticationService {
         throw new DataNotFoundException("Missing refresh token cookie in request");
     }
 
-    public Boolean isAuthenticated() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication != null && authentication.isAuthenticated();
-
-    }
 }

@@ -1,6 +1,9 @@
 package com.example.school.visitor;
 
-import com.example.school.user.permission.Role;
+import com.example.school.entity.user.permission.Role;
+import com.example.school.entity.visitor.Visitor;
+import com.example.school.entity.visitor.VisitorRepository;
+import com.example.school.entity.visitor.VisitorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;

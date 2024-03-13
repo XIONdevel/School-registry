@@ -1,0 +1,64 @@
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+header {
+    width: 100%;
+    height: 50px;
+    top: 0;
+    background-color: darkgray;
+    position: fixed;
+    display: flex;
+    text-align: right;
+    padding: 0;
+}
+
+#logo {
+    display: block;
+    text-align: left;
+}
+
+img {
+    display: flex;
+}
+
+#menuImg, #profImg {
+    width: 100%;
+    height: 100%;
+}
+
+#profileButton, #menuButton {
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+}
+
+
+#logoImg {
+    display: flex;
+    margin: 5px;
+    width: 150px;
+    height: 40px;
+}
+
+#button-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-align: right;
+    height: 50px;
+    width: 100px;
+}
+
+#menu {
+    width: 200px;
+    height: 100%;
+    background-color: darkgray;
+    position: fixed;
+    right: 0;
+    top: 50px;
+}
+

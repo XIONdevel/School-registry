@@ -1,5 +1,6 @@
 package com.example.school.grade;
 
+import com.example.school.entity.grade.GradeRepository;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 

@@ -1,11 +1,14 @@
 package com.example.school.group;
 
+import com.example.school.entity.group.Group;
+import com.example.school.entity.group.GroupRepository;
+import com.example.school.entity.group.GroupService;
 import com.example.school.exception.ExistsException;
 import com.example.school.exception.GroupNotFoundException;
 import com.example.school.exception.TeacherNotFoundException;
-import com.example.school.student.StudentRepository;
-import com.example.school.teacher.Teacher;
-import com.example.school.teacher.TeacherRepository;
+import com.example.school.entity.student.StudentRepository;
+import com.example.school.entity.teacher.Teacher;
+import com.example.school.entity.teacher.TeacherRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

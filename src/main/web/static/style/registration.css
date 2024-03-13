@@ -1,0 +1,62 @@
+body {
+    width: 100%;
+    height: 100%;
+}
+
+#content {
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 50px; /* Adjust as needed */
+}
+
+#registerBlock {
+    margin-top: 50px;
+}
+
+#registrationForm {
+    width: 300px;
+    margin: 0 auto;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 8px;
+}
+
+button[type="button"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    position: static;
+}
+
+button[type="button"]:hover {
+    background-color: #0056b3;
+}
+
+#exception {
+    color: red;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#roleSelect {
+    border: 1px solid black;
+    padding: 5px;
+}

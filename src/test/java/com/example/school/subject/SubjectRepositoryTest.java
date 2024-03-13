@@ -1,5 +1,7 @@
 package com.example.school.subject;
 
+import com.example.school.entity.subject.Subject;
+import com.example.school.entity.subject.SubjectRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
