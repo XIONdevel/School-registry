@@ -127,7 +127,7 @@ public class GroupService {
         Teacher teacher = optionalTeacher.get();
         Group group = optionalGroup.get();
 
-        group.addTeacherLead(teacher);
+        group.setLead(teacher);
         teacher.setMainGroup(group);
 
         groupRepository.save(group);
@@ -149,7 +149,7 @@ public class GroupService {
             throw new DataNotFoundException("Group with given id not found.");
         }
 
-        Teacher teacher = optionalGroup.get().getTeacherLead();
+        Teacher teacher = optionalGroup.get().getLead();
 
         if (teacher != null) {
             teacher.removeGroup();

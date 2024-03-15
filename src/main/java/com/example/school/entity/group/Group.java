@@ -4,9 +4,10 @@ import com.example.school.entity.teacher.Teacher;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
+@Data
 @Entity
 @Builder
 @AllArgsConstructor
@@ -20,47 +21,18 @@ public class Group {
     private String name;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "teacherlead_id")
-    private Teacher teacherLead;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Teacher getTeacherLead() {
-        return teacherLead;
-    }
-
-    public void addTeacherLead(Teacher teacherLead) {
-        this.teacherLead = teacherLead;
-    }
+    @JoinColumn(name = "lead_id")
+    private Teacher lead;
 
     public Group(String name) {
         this.name = name;
     }
 
-    public Group(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
     public boolean isTaken() {
-        return this.teacherLead != null;
+        return this.lead != null;
     }
 
     public void removeTeacher() {
-        this.teacherLead = null;
+        this.lead = null;
     }
 }

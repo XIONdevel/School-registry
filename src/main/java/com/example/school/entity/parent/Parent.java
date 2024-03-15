@@ -32,7 +32,7 @@ public class Parent extends UserData {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany(mappedBy = "parents")
+    @ManyToMany(mappedBy = "parents", fetch = FetchType.LAZY)
     private Set<Student> children = new HashSet<>();
 
     public void addChild(Student student) {

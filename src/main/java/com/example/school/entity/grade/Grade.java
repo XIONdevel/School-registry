@@ -8,7 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 @Data
@@ -29,7 +31,7 @@ public class Grade {
     @Column(nullable = false)
     private LocalDate date;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id")
     private Subject subject;
 

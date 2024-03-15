@@ -42,15 +42,13 @@ public class Teacher extends UserData {
     private User user;
 
     @JsonIgnore
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "teacher_subject",
             joinColumns = @JoinColumn(name = "teacher_id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id")
     )
     private Set<Subject> subjects = new HashSet<>();
-
-
 
     public void addSubject(Subject subject) {
         subjects.add(subject);
