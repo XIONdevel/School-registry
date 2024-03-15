@@ -34,7 +34,7 @@ public class Student extends UserData {
     private User user;
 
     @JsonIgnore
-    @ManyToMany (cascade = CascadeType.ALL)
+    @ManyToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable (
             name = "student_parent",
             joinColumns = @JoinColumn(name = "student_id"),
@@ -42,10 +42,9 @@ public class Student extends UserData {
     )
     private Set<Parent> parents = new HashSet<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
-
 
     public void addParent(Parent parent) {
         parents.add(parent);
